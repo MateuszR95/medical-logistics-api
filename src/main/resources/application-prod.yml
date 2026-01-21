@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/medical_logistics
+    username: user
+    password: pass
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:/db/changelog/master.xml
+    contexts: prod
+  sql:
+    init:
+      mode: never
+
+
+

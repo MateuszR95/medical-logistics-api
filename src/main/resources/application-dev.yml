@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:medical_logistics_api
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:/db/changelog/master.xml
+    contexts: dev
