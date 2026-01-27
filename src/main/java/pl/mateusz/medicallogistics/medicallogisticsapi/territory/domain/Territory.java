@@ -48,7 +48,7 @@ public class Territory {
   private String name;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 20)
+  @Column(name = "territory_type", nullable = false, length = 20)
   private TerritoryType type;
 
   @ManyToOne(fetch = FetchType.LAZY)

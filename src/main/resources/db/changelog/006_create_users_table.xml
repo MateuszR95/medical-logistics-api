@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="007_create_users_table" author="mrojek">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="email" type="varchar(120)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="first_name" type="varchar(80)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(80)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position_name" type="varchar(120)"/>
+            <column name="role" type="varchar(30)">
+            <constraints nullable="false"/>
+            </column>
+            <column name="territory_id" type="bigint"/>
+            <column name="reports_to_id" type="bigint"/>
+            <column name="active" type="boolean">
+            <constraints nullable="false"/>
+            </column>
+            <column name="password_hash" type="varchar(120)">
+            <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+            <constraints nullable="false"/>
+            </column>
+            <column name="password_changed_at" type="timestamp"/>
+    </createTable>
+
+    <addUniqueConstraint
+            tableName="users"
+            columnNames="email"
+            constraintName="uq_user_email"/>
+
+    <addForeignKeyConstraint
+            baseTableName="users"
+            baseColumnNames="territory_id"
+            referencedTableName="territory"
+            referencedColumnNames="id"
+            constraintName="fk_user_territory"/>
+
+    <addForeignKeyConstraint
+            baseTableName="users"
+            baseColumnNames="reports_to_id"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            constraintName="fk_reports_to"/>
+</changeSet>
+
+        </databaseChangeLog>

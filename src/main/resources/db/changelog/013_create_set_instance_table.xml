@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="013_create_set_instance_table" author="mrojek">
+
+        <createTable tableName="set_instance">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="tag_id" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="set_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="set_base_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="location_id" type="bigint"/>
+
+            <column name="set_status" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="customer_id" type="bigint"/>
+
+            <column name="shipped_date" type="date"/>
+            <column name="surgery_date" type="date"/>
+            <column name="expected_return_date" type="date"/>
+
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="set_instance"
+                columnNames="tag_id"
+                constraintName="uq_set_instance_tag"/>
+
+        <createIndex tableName="set_instance" indexName="ix_setinst_setbase">
+            <column name="set_base_id"/>
+        </createIndex>
+
+        <createIndex tableName="set_instance" indexName="ix_setinst_location">
+            <column name="location_id"/>
+        </createIndex>
+
+        <createIndex tableName="set_instance" indexName="ix_setinst_customer">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex tableName="set_instance" indexName="ix_setinst_status">
+            <column name="set_status"/>
+        </createIndex>
+
+        <createIndex tableName="set_instance" indexName="ix_setinst_active">
+            <column name="active"/>
+        </createIndex>
+        <addForeignKeyConstraint
+                constraintName="fk_set_instance_set_base"
+                baseTableName="set_instance"
+                baseColumnNames="set_base_id"
+                referencedTableName="set_base"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_set_instance_location"
+                baseTableName="set_instance"
+                baseColumnNames="location_id"
+                referencedTableName="location"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_set_instance_customer"
+                baseTableName="set_instance"
+                baseColumnNames="customer_id"
+                referencedTableName="customer"
+                referencedColumnNames="id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

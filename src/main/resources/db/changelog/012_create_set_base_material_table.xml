@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="012_create_set_base_material_table" author="mrojek">
+        <createTable tableName="set_base_material">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="set_base_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="required_qty" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+    </createTable>
+
+    <addUniqueConstraint
+            tableName="set_base_material"
+            columnNames="set_base_id, item_id"
+            constraintName="uq_setbase_material"/>
+
+    <createIndex
+            tableName="set_base_material"
+            indexName="ix_setbasematerial_setbase">
+        <column name="set_base_id"/>
+    </createIndex>
+
+    <createIndex
+            tableName="set_base_material"
+            indexName="ix_setbasematerial_item">
+        <column name="item_id"/>
+    </createIndex>
+
+    <addForeignKeyConstraint
+            baseTableName="set_base_material"
+            baseColumnNames="set_base_id"
+            referencedTableName="set_base"
+            referencedColumnNames="id"
+            constraintName="fk_setbasematerial_setbase"/>
+
+    <addForeignKeyConstraint
+            baseTableName="set_base_material"
+            baseColumnNames="item_id"
+            referencedTableName="item"
+            referencedColumnNames="id"
+            constraintName="fk_setbasematerial_item"/>
+</changeSet>
+
+        </databaseChangeLog>

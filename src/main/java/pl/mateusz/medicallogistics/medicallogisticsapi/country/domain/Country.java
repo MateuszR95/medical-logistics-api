@@ -16,7 +16,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "country",
-    uniqueConstraints = @UniqueConstraint(name = "uq_country_iso2", columnNames = "iso2"))
+    uniqueConstraints = @UniqueConstraint(name = "uq_country_iso2",
+      columnNames = "iso2"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,13 +27,13 @@ public class Country {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false, length = 2)
+  @Column(name = "iso2", nullable = false, length = 2)
   private String iso2;
 
   @Column(nullable = false, length = 80)
   private String name;
 
-  @Column(nullable = false)
+  @Column(name = "active", nullable = false)
   private boolean active = true;
 }
 

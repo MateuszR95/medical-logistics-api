@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="004_create_territory_table" author="mrojek">
+
+        <createTable tableName="territory">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="territory_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="bigint"/>
+            <column name="country_id" type="bigint"/>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="territory"
+                columnNames="code"
+                constraintName="uq_territory_code"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_territory_parent"
+                baseTableName="territory"
+                baseColumnNames="parent_id"
+                referencedTableName="territory"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_territory_country"
+                baseTableName="territory"
+                baseColumnNames="country_id"
+                referencedTableName="country"
+                referencedColumnNames="id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

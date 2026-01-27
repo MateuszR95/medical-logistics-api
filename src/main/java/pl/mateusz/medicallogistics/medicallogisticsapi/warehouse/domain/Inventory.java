@@ -56,7 +56,8 @@ public class Inventory {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id",
-      foreignKey = @ForeignKey(name = "fk_stock_lot"))
+      foreignKey = @ForeignKey(name = "fk_stock_lot"),
+      nullable = false)
   private Lot lot;
 
   @Column(nullable = false)

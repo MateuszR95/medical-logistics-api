@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="006_create_customer_table" author="mrojek">
+        <createTable tableName="customer">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(160)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tax_id_number" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="territory_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sales_rep_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="billing_address_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shipping_address_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="customer"
+                baseColumnNames="territory_id"
+                referencedTableName="territory"
+                referencedColumnNames="id"
+                constraintName="fk_customer_territory"/>
+
+        <addForeignKeyConstraint
+                baseTableName="customer"
+                baseColumnNames="sales_rep_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_customer_sales_rep"/>
+
+        <addForeignKeyConstraint
+                baseTableName="customer"
+                baseColumnNames="billing_address_id"
+                referencedTableName="address"
+                referencedColumnNames="id"
+                constraintName="fk_customer_billing_address"/>
+
+        <addForeignKeyConstraint
+                baseTableName="customer"
+                baseColumnNames="shipping_address_id"
+                referencedTableName="address"
+                referencedColumnNames="id"
+                constraintName="fk_customer_shipping_address"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="008_create_warehouse_table" author="mrojek">
+        <createTable tableName="warehouse">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(120)">
+            <constraints nullable="false"/>
+            </column>
+            <column name="address_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="warehouse"
+                columnNames="code"
+                constraintName="uq_warehouse_code"/>
+
+        <addForeignKeyConstraint
+                baseTableName="warehouse"
+                baseColumnNames="address_id"
+                referencedTableName="address"
+                referencedColumnNames="id"
+                constraintName="fk_warehouse_address"/>
+    </changeSet>
+
+</databaseChangeLog>
