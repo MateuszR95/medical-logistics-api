@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="010_create_inventory_table" author="mrojek">
+        <createTable tableName="inventory">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="location_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lot_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="qty" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="inventory"
+                columnNames="location_id, item_id, lot_id"
+                constraintName="uq_inventory_location_item_lot"/>
+
+        <createIndex
+                tableName="inventory"
+                indexName="ix_inventory_location">
+            <column name="location_id"/>
+        </createIndex>
+
+        <createIndex
+                tableName="inventory"
+                indexName="ix_inventory_item">
+            <column name="item_id"/>
+        </createIndex>
+
+        <createIndex
+                tableName="inventory"
+                indexName="ix_inventory_lot">
+            <column name="lot_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint
+                baseTableName="inventory"
+                baseColumnNames="location_id"
+                referencedTableName="location"
+                referencedColumnNames="id"
+                constraintName="fk_stock_location"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inventory"
+                baseColumnNames="item_id"
+                referencedTableName="item"
+                referencedColumnNames="id"
+                constraintName="fk_stock_item"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inventory"
+                baseColumnNames="lot_id"
+                referencedTableName="lot"
+                referencedColumnNames="id"
+                constraintName="fk_stock_lot"/>
+    </changeSet>
+
+</databaseChangeLog>

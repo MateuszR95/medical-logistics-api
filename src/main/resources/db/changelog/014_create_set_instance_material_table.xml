@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="014_create_set_instance_material_table" author="mrojek">
+        <createTable tableName="set_instance_material">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="set_instance_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lot_id" type="bigint"/>
+            <column name="present_qty" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="missing_qty" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="set_instance_material"
+                columnNames="set_instance_id,item_id,lot_id"
+                constraintName="uq_setinst_material"/>
+        <createIndex tableName="set_instance_material" indexName="ix_setinst_material_setinst">
+            <column name="set_instance_id"/>
+        </createIndex>
+
+        <createIndex tableName="set_instance_material" indexName="ix_setinst_material_item">
+            <column name="item_id"/>
+        </createIndex>
+
+        <createIndex tableName="set_instance_material" indexName="ix_setinst_material_lot">
+            <column name="lot_id"/>
+        </createIndex>
+        <addForeignKeyConstraint
+                constraintName="fk_setinstmaterial_setinst"
+                baseTableName="set_instance_material"
+                baseColumnNames="set_instance_id"
+                referencedTableName="set_instance"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                constraintName="fk_setinstmaterial_item"
+                baseTableName="set_instance_material"
+                baseColumnNames="item_id"
+                referencedTableName="item"
+                referencedColumnNames="id"/>
+        <addForeignKeyConstraint
+                constraintName="fk_setinstmaterial_lot"
+                baseTableName="set_instance_material"
+                baseColumnNames="lot_id"
+                referencedTableName="lot"
+                referencedColumnNames="id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -40,7 +40,8 @@ public class Warehouse {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address_id",
-      foreignKey = @ForeignKey(name = "fk_warehouse_address"))
+      foreignKey = @ForeignKey(name = "fk_warehouse_address"),
+      nullable = false)
   private Address address;
 
   @Column(nullable = false)

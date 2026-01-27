@@ -6,6 +6,18 @@
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
     <include file="001_create_item_table.xml" relativeToChangelogFile="true"/>
     <include file="002_create_lot_table.xml" relativeToChangelogFile="true"/>
+    <include file="003_create_country_table.xml" relativeToChangelogFile="true"/>
+    <include file="004_create_territory_table.xml" relativeToChangelogFile="true"/>
+    <include file="005_create_address_table.xml" relativeToChangelogFile="true"/>
+    <include file="006_create_users_table.xml" relativeToChangelogFile="true"/>
+    <include file="007_create_customer_table.xml" relativeToChangelogFile="true"/>
+    <include file="008_create_warehouse_table.xml" relativeToChangelogFile="true"/>
+    <include file="009_create_location_table.xml" relativeToChangelogFile="true"/>
+    <include file="010_create_inventory_table.xml" relativeToChangelogFile="true"/>
+    <include file="011_create_set_base_table.xml" relativeToChangelogFile="true"/>
+    <include file="012_create_set_base_material_table.xml" relativeToChangelogFile="true"/>
+    <include file="013_create_set_instance_table.xml" relativeToChangelogFile="true"/>
+    <include file="014_create_set_instance_material_table.xml" relativeToChangelogFile="true"/>
     <include file="testdata/001_item.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="testdata/002_lot.sql" relativeToChangelogFile="true" context="dev"/>
 </databaseChangeLog>
