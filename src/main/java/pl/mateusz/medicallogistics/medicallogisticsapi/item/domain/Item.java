@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.ItemType;
-import pl.mateusz.medicallogistics.medicallogisticsapi.lot.Lot;
+import pl.mateusz.medicallogistics.medicallogisticsapi.lot.domain.Lot;
 
 
 /**
