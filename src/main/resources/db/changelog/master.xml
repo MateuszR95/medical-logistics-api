@@ -18,6 +18,20 @@
     <include file="012_create_set_base_material_table.xml" relativeToChangelogFile="true"/>
     <include file="013_create_set_instance_table.xml" relativeToChangelogFile="true"/>
     <include file="014_create_set_instance_material_table.xml" relativeToChangelogFile="true"/>
+    <include file="015_add_returned_date_column_in_set_instance_table.xml" relativeToChangelogFile="true"/>
     <include file="testdata/001_item.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="testdata/002_lot.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/003_country.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/004_territory.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/005_address.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/006_users.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/007_customer.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/008_warehouse.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/009_location.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/010_inventory.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/011_set_base.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/012_set_base_material.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/013_set_instance.sql" relativeToChangelogFile="true" context="dev"/>
+    <include file="testdata/014_set_instance_material.sql" relativeToChangelogFile="true" context="dev"/>
+
 </databaseChangeLog>

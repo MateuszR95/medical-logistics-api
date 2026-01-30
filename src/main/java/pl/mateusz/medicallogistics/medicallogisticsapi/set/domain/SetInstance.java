@@ -86,6 +86,9 @@ public class SetInstance {
   @Column(name = "expected_return_date")
   private LocalDate expectedReturnDate;
 
+  @Column(name = "returned_date")
+  private LocalDate returnedDate;
+
   @Column(nullable = false)
   private boolean active = true;
 

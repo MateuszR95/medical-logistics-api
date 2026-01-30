@@ -5,7 +5,8 @@ package pl.mateusz.medicallogistics.medicallogisticsapi.user;
  */
 public enum UserRole {
   ADMIN,
-  CUSTOMER_SERVICE,
+  COUNTRY_CUSTOMER_SERVICE,
+  WAREHOUSE_CUSTOMER_SERVICE,
   SALES,
   MANAGER
 }
