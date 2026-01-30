@@ -7,5 +7,6 @@ public enum LocationZone {
   RECEIVING_REPACK,
   STORAGE,
   ALLOCATED,
-  QUARANTINE
+  QUARANTINE,
+  RETURNS
 }

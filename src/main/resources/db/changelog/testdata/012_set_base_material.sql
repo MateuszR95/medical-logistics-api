@@ -1,0 +1,71 @@
+INSERT INTO set_base_material (set_base_id, item_id, required_qty)
+VALUES
+
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.000'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.001'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.003'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.005'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.007'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.019'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.020'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.111'), (SELECT id FROM item WHERE ref_number='111.029'), 10),
+
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.000'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.010'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.012'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.014'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.016'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.024'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.025'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.112'), (SELECT id FROM item WHERE ref_number='111.030'), 10),
+
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.037'), 2),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.038'), 2),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.039'), 2),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.040'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.041'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.042'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.043'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='111.044'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.121'), (SELECT id FROM item WHERE ref_number='911.046'), 1),
+
+((SELECT id FROM set_base WHERE catalog_number='999.122'), (SELECT id FROM item WHERE ref_number='121.014'), 2),
+((SELECT id FROM set_base WHERE catalog_number='999.122'), (SELECT id FROM item WHERE ref_number='121.015'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.122'), (SELECT id FROM item WHERE ref_number='121.016'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.122'), (SELECT id FROM item WHERE ref_number='121.017'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.122'), (SELECT id FROM item WHERE ref_number='921.019'), 1),
+
+((SELECT id FROM set_base WHERE catalog_number='999.131'), (SELECT id FROM item WHERE ref_number='111.001'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.131'), (SELECT id FROM item WHERE ref_number='111.003'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.131'), (SELECT id FROM item WHERE ref_number='111.019'), 4),
+((SELECT id FROM set_base WHERE catalog_number='999.131'), (SELECT id FROM item WHERE ref_number='111.029'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.131'), (SELECT id FROM item WHERE ref_number='111.040'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.131'), (SELECT id FROM item WHERE ref_number='111.043'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.131'), (SELECT id FROM item WHERE ref_number='911.045'), 1),
+
+((SELECT id FROM set_base WHERE catalog_number='999.132'), (SELECT id FROM item WHERE ref_number='121.000'), 4),
+((SELECT id FROM set_base WHERE catalog_number='999.132'), (SELECT id FROM item WHERE ref_number='121.006'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.132'), (SELECT id FROM item WHERE ref_number='121.013'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.132'), (SELECT id FROM item WHERE ref_number='121.015'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.132'), (SELECT id FROM item WHERE ref_number='921.018'), 1),
+
+((SELECT id FROM set_base WHERE catalog_number='999.141'), (SELECT id FROM item WHERE ref_number='131.000S'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.141'), (SELECT id FROM item WHERE ref_number='131.001'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.141'), (SELECT id FROM item WHERE ref_number='131.002'), 6),
+((SELECT id FROM set_base WHERE catalog_number='999.141'), (SELECT id FROM item WHERE ref_number='131.003'), 6),
+
+((SELECT id FROM set_base WHERE catalog_number='999.142'), (SELECT id FROM item WHERE ref_number='111.034S'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.142'), (SELECT id FROM item WHERE ref_number='111.035S'), 10),
+((SELECT id FROM set_base WHERE catalog_number='999.142'), (SELECT id FROM item WHERE ref_number='111.036S'), 10),
+
+((SELECT id FROM set_base WHERE catalog_number='999.151'), (SELECT id FROM item WHERE ref_number='141.000'), 8),
+((SELECT id FROM set_base WHERE catalog_number='999.151'), (SELECT id FROM item WHERE ref_number='141.001'), 8),
+((SELECT id FROM set_base WHERE catalog_number='999.151'), (SELECT id FROM item WHERE ref_number='141.005'), 2),
+((SELECT id FROM set_base WHERE catalog_number='999.151'), (SELECT id FROM item WHERE ref_number='141.008'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.151'), (SELECT id FROM item WHERE ref_number='941.013'), 1),
+
+((SELECT id FROM set_base WHERE catalog_number='999.152'), (SELECT id FROM item WHERE ref_number='151.000S'), 4),
+((SELECT id FROM set_base WHERE catalog_number='999.152'), (SELECT id FROM item WHERE ref_number='151.002S'), 4),
+((SELECT id FROM set_base WHERE catalog_number='999.152'), (SELECT id FROM item WHERE ref_number='151.006'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.152'), (SELECT id FROM item WHERE ref_number='151.012'), 1),
+((SELECT id FROM set_base WHERE catalog_number='999.152'), (SELECT id FROM item WHERE ref_number='951.014'), 1);
