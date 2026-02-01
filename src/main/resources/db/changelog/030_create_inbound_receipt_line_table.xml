@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="030_create_inbound_receipt_line_table" author="mrojek">
+
+        <createTable tableName="inbound_receipt_line">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"
+                             primaryKeyName="pk_inbound_receipt_line"/>
+            </column>
+
+            <column name="batch_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="item_ref_number" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="lot_number" type="VARCHAR(80)"/>
+
+            <column name="expiration_date" type="DATE"/>
+
+            <column name="qty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="resolved_item_id" type="BIGINT"/>
+
+            <column name="resolved_lot_id" type="BIGINT"/>
+
+            <column name="status" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="line_type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="set_tag_id" type="VARCHAR(20)"/>
+
+            <column name="resolved_set_instance_id" type="BIGINT"/>
+
+            <column name="error_message" type="VARCHAR(500)"/>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="inbound_receipt_line" baseColumnNames="batch_id"
+                referencedTableName="inbound_receipt_batch" referencedColumnNames="id"
+                constraintName="fk_irl_batch"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inbound_receipt_line" baseColumnNames="resolved_item_id"
+                referencedTableName="item" referencedColumnNames="id"
+                constraintName="fk_irl_resolved_item"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inbound_receipt_line" baseColumnNames="resolved_lot_id"
+                referencedTableName="lot" referencedColumnNames="id"
+                constraintName="fk_irl_resolved_lot"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inbound_receipt_line" baseColumnNames="resolved_set_instance_id"
+                referencedTableName="set_instance" referencedColumnNames="id"
+                constraintName="fk_irl_resolved_set_instance"/>
+
+        <createIndex indexName="ix_irl_batch" tableName="inbound_receipt_line">
+            <column name="batch_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irl_status" tableName="inbound_receipt_line">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irl_item_ref" tableName="inbound_receipt_line">
+            <column name="item_ref_number"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irl_lot_number" tableName="inbound_receipt_line">
+            <column name="lot_number"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irl_line_type" tableName="inbound_receipt_line">
+            <column name="line_type"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irl_set_tag_id" tableName="inbound_receipt_line">
+            <column name="set_tag_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irl_resolved_set_instance" tableName="inbound_receipt_line">
+            <column name="resolved_set_instance_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

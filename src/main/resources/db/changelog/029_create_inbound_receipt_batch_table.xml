@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="029_create_inbound_receipt_batch_table" author="mrojek">
+
+        <createTable tableName="inbound_receipt_batch">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"
+                             primaryKeyName="pk_inbound_receipt_batch"/>
+            </column>
+
+            <column name="batch_number" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="file_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="source_warehouse_code" type="VARCHAR(30)"/>
+
+            <column name="received_to_warehouse_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="posted_by_id" type="BIGINT"/>
+
+            <column name="posted_at" type="TIMESTAMP"/>
+
+            <column name="comment" type="VARCHAR(800)"/>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="inbound_receipt_batch"
+                columnNames="batch_number"
+                constraintName="uq_irb_batch_number"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inbound_receipt_batch" baseColumnNames="received_to_warehouse_id"
+                referencedTableName="warehouse" referencedColumnNames="id"
+                constraintName="fk_irb_received_to_wh"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inbound_receipt_batch" baseColumnNames="created_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_irb_created_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="inbound_receipt_batch" baseColumnNames="posted_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_irb_posted_by"/>
+
+        <createIndex indexName="ix_irb_status" tableName="inbound_receipt_batch">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irb_received_to_wh" tableName="inbound_receipt_batch">
+            <column name="received_to_warehouse_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_irb_created_at" tableName="inbound_receipt_batch">
+            <column name="created_at"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

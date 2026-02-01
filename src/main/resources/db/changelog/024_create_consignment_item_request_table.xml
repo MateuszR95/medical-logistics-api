@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="024_create_consignment_item_request_table" author="mrojek">
+
+        <createTable tableName="consignment_item_request">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_consignment_item_request"/>
+            </column>
+
+            <column name="request_number" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="type" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="email_content" type="TEXT"/>
+
+            <column name="planned_shipping_date" type="DATE"/>
+
+            <column name="picked_by_id" type="BIGINT"/>
+
+            <column name="picked_at" type="TIMESTAMP"/>
+
+            <column name="shipped_by_id" type="BIGINT"/>
+
+            <column name="shipped_at" type="TIMESTAMP"/>
+
+            <column name="tracking_number" type="VARCHAR(120)"/>
+
+            <column name="carrier" type="VARCHAR(50)"/>
+
+            <column name="comment" type="VARCHAR(1000)"/>
+
+            <column name="parent_request_id" type="BIGINT"/>
+
+            <column name="set_instance_id" type="BIGINT"/>
+
+            <column name="ship_to_address_id" type="BIGINT"/>
+
+            <column name="source_ref" type="VARCHAR(80)"/>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="consignment_item_request"
+                columnNames="request_number"
+                constraintName="uq_cir_request_number"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_request" baseColumnNames="customer_id"
+                referencedTableName="customer" referencedColumnNames="id"
+                constraintName="fk_cir_customer"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_request" baseColumnNames="created_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_cir_created_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_request" baseColumnNames="picked_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_cir_picked_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_request" baseColumnNames="shipped_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_cir_shipped_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_request" baseColumnNames="parent_request_id"
+                referencedTableName="consignment_item_request" referencedColumnNames="id"
+                constraintName="fk_cir_parent_request"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_request" baseColumnNames="set_instance_id"
+                referencedTableName="set_instance" referencedColumnNames="id"
+                constraintName="fk_cir_set_instance"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_request" baseColumnNames="ship_to_address_id"
+                referencedTableName="address" referencedColumnNames="id"
+                constraintName="fk_cir_ship_to_address"/>
+
+        <createIndex indexName="ix_cir_customer" tableName="consignment_item_request">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_status" tableName="consignment_item_request">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_planned_shipping_date" tableName="consignment_item_request">
+            <column name="planned_shipping_date"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_shipped_at" tableName="consignment_item_request">
+            <column name="shipped_at"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_source_ref" tableName="consignment_item_request">
+            <column name="source_ref"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_set_instance" tableName="consignment_item_request">
+            <column name="set_instance_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

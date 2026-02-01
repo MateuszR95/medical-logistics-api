@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="018-create-loaner-request-decision" author="mrojek">
+        <createTable tableName="loaner_request_decision">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_loaner_request_decision"/>
+            </column>
+
+            <column name="loaner_request_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="decided_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified_by_id" type="BIGINT"/>
+
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="voided_at" type="TIMESTAMP"/>
+
+            <column name="comment" type="VARCHAR(800)"/>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="loaner_request_decision"
+                columnNames="loaner_request_id"
+                constraintName="uq_lrd_request"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request_decision" baseColumnNames="loaner_request_id"
+                referencedTableName="loaner_request" referencedColumnNames="id"
+                constraintName="fk_lrd_request"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request_decision" baseColumnNames="decided_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_lrd_decided_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request_decision" baseColumnNames="modified_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_lrd_modified_by"/>
+
+        <createIndex indexName="ix_lrd_status" tableName="loaner_request_decision">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="ix_lrd_decided_by" tableName="loaner_request_decision">
+            <column name="decided_by_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="022_create_set_inspection_discrepancy_line_table" author="mrojek">
+
+        <createTable tableName="set_inspection_discrepancy_line">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"
+                             primaryKeyName="pk_set_inspection_discrepancy_line"/>
+            </column>
+
+            <column name="set_inspection_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="item_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="lot_id" type="BIGINT"/>
+
+            <column name="discrepancy_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="qty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="resolution" type="VARCHAR(40)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="loaner_request_id" type="BIGINT"/>
+
+            <column name="comment" type="VARCHAR(800)"/>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="set_inspection_discrepancy_line"
+                columnNames="set_inspection_id,item_id,lot_id,discrepancy_type"
+                constraintName="uq_sidl_inspection_item_lot_type"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection_discrepancy_line" baseColumnNames="set_inspection_id"
+                referencedTableName="set_inspection" referencedColumnNames="id"
+                constraintName="fk_sidl_inspection"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection_discrepancy_line" baseColumnNames="item_id"
+                referencedTableName="item" referencedColumnNames="id"
+                constraintName="fk_sidl_item"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection_discrepancy_line" baseColumnNames="lot_id"
+                referencedTableName="lot" referencedColumnNames="id"
+                constraintName="fk_sidl_lot"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection_discrepancy_line" baseColumnNames="loaner_request_id"
+                referencedTableName="loaner_request" referencedColumnNames="id"
+                constraintName="fk_sidl_loaner_request"/>
+
+        <createIndex indexName="ix_sidl_inspection" tableName="set_inspection_discrepancy_line">
+            <column name="set_inspection_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sidl_item" tableName="set_inspection_discrepancy_line">
+            <column name="item_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sidl_lot" tableName="set_inspection_discrepancy_line">
+            <column name="lot_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sidl_type" tableName="set_inspection_discrepancy_line">
+            <column name="discrepancy_type"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sidl_resolution" tableName="set_inspection_discrepancy_line">
+            <column name="resolution"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sidl_loaner_request" tableName="set_inspection_discrepancy_line">
+            <column name="loaner_request_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>
