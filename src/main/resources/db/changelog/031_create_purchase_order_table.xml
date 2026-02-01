@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="031_create_purchase_order_table" author="mrojek">
+
+        <createTable tableName="purchase_order">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_purchase_order"/>
+            </column>
+
+            <column name="po_number" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="procedure_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="customer_po_number" type="VARCHAR(128)"/>
+
+            <column name="patient_data" type="VARCHAR(128)"/>
+
+            <column name="ship_to_address_id" type="BIGINT"/>
+
+            <column name="source_loaner_request_id" type="BIGINT"/>
+
+            <column name="entered_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="purchase_order"
+                columnNames="po_number"
+                constraintName="uq_po_number"/>
+
+        <addForeignKeyConstraint
+                baseTableName="purchase_order" baseColumnNames="customer_id"
+                referencedTableName="customer" referencedColumnNames="id"
+                constraintName="fk_po_customer"/>
+
+        <addForeignKeyConstraint
+                baseTableName="purchase_order" baseColumnNames="ship_to_address_id"
+                referencedTableName="address" referencedColumnNames="id"
+                constraintName="fk_po_ship_to_address"/>
+
+        <addForeignKeyConstraint
+                baseTableName="purchase_order" baseColumnNames="source_loaner_request_id"
+                referencedTableName="loaner_request" referencedColumnNames="id"
+                constraintName="fk_po_source_loaner_request"/>
+
+        <addForeignKeyConstraint
+                baseTableName="purchase_order" baseColumnNames="entered_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_po_entered_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="purchase_order" baseColumnNames="modified_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_po_modified_by"/>
+
+        <createIndex indexName="ix_po_customer" tableName="purchase_order">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_po_type" tableName="purchase_order">
+            <column name="type"/>
+        </createIndex>
+
+        <createIndex indexName="ix_po_procedure_date" tableName="purchase_order">
+            <column name="procedure_date"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

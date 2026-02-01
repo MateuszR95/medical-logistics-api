@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="034_create_shipment_line_table" author="mrojek">
+
+        <createTable tableName="shipment_line">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_shipment_line"/>
+            </column>
+
+            <column name="shipment_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="line_type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="item_id" type="BIGINT"/>
+
+            <column name="lot_id" type="BIGINT"/>
+
+            <column name="qty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="set_instance_id" type="BIGINT"/>
+
+            <column name="source_ref_type" type="VARCHAR(40)" defaultValue="NONE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="source_ref_id" type="BIGINT"/>
+
+            <column name="comment" type="VARCHAR(500)"/>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="shipment_line" baseColumnNames="shipment_id"
+                referencedTableName="shipment" referencedColumnNames="id"
+                constraintName="fk_shl_shipment"/>
+
+        <addForeignKeyConstraint
+                baseTableName="shipment_line" baseColumnNames="item_id"
+                referencedTableName="item" referencedColumnNames="id"
+                constraintName="fk_shl_item"/>
+
+        <addForeignKeyConstraint
+                baseTableName="shipment_line" baseColumnNames="lot_id"
+                referencedTableName="lot" referencedColumnNames="id"
+                constraintName="fk_shl_lot"/>
+
+        <addForeignKeyConstraint
+                baseTableName="shipment_line" baseColumnNames="set_instance_id"
+                referencedTableName="set_instance" referencedColumnNames="id"
+                constraintName="fk_shl_set_instance"/>
+
+        <createIndex indexName="ix_shl_shipment" tableName="shipment_line">
+            <column name="shipment_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_shl_line_type" tableName="shipment_line">
+            <column name="line_type"/>
+        </createIndex>
+
+        <createIndex indexName="ix_shl_item" tableName="shipment_line">
+            <column name="item_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_shl_lot" tableName="shipment_line">
+            <column name="lot_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_shl_setinst" tableName="shipment_line">
+            <column name="set_instance_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_shl_ref" tableName="shipment_line">
+            <column name="source_ref_type"/>
+            <column name="source_ref_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

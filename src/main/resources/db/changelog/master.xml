@@ -19,6 +19,27 @@
     <include file="013_create_set_instance_table.xml" relativeToChangelogFile="true"/>
     <include file="014_create_set_instance_material_table.xml" relativeToChangelogFile="true"/>
     <include file="015_add_returned_date_column_in_set_instance_table.xml" relativeToChangelogFile="true"/>
+    <include file="016_create_loaner_request_table.xml" relativeToChangelogFile="true"/>
+    <include file="017_create_loaner_request_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="018_create_loaner_request_decision_table.xml" relativeToChangelogFile="true"/>
+    <include file="019_create_loaner_request_decision_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="020_create_set_return_table.xml" relativeToChangelogFile="true"/>
+    <include file="021-create-set-inspection_table.xml" relativeToChangelogFile="true"/>
+    <include file="022_create_set_inspection_discrepancy_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="023_add_allocated_qty_column_in_inventory_table.xml" relativeToChangelogFile="true"/>
+    <include file="024_create_consignment_item_request_table.xml" relativeToChangelogFile="true"/>
+    <include file="025_create_consignment_item_request_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="026_create_consignment_item_return_table.xml" relativeToChangelogFile="true"/>
+    <include file="027_create_consignment_item_return_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="028_create_customer_consignment_stock.xml" relativeToChangelogFile="true"/>
+    <include file="029_create_inbound_receipt_batch_table.xml" relativeToChangelogFile="true"/>
+    <include file="030_create_inbound_receipt_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="031_create_purchase_order_table.xml" relativeToChangelogFile="true"/>
+    <include file="032_create_purchase_order_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="033_create_shipment_table.xml" relativeToChangelogFile="true"/>
+    <include file="034_create_shipment_line_table.xml" relativeToChangelogFile="true"/>
+    <include file="035_create_stock_movement_table.xml" relativeToChangelogFile="true"/>
+    <include file="036_create_status_history_table.xml" relativeToChangelogFile="true"/>
     <include file="testdata/001_item.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="testdata/002_lot.sql" relativeToChangelogFile="true" context="dev"/>
     <include file="testdata/003_country.sql" relativeToChangelogFile="true" context="dev"/>

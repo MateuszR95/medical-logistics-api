@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="036_create_status_history_table" author="mrojek">
+
+        <createTable tableName="status_history">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_status_history"/>
+            </column>
+
+            <column name="entity_type" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="entity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="field_name" type="VARCHAR(60)" defaultValue="status">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="from_value" type="VARCHAR(60)"/>
+
+            <column name="to_value" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="changed_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="changed_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="comment" type="VARCHAR(800)"/>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="status_history" baseColumnNames="changed_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_sth_changed_by"/>
+
+        <createIndex indexName="ix_sth_entity" tableName="status_history">
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sth_changed_at" tableName="status_history">
+            <column name="changed_at"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sth_changed_by" tableName="status_history">
+            <column name="changed_by_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="021-create-set-inspection_table" author="mrojek">
+
+        <createTable tableName="set_inspection">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_set_inspection"/>
+            </column>
+
+            <column name="set_return_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="inspected_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="inspected_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="received_from_customer_id" type="BIGINT"/>
+
+            <column name="status" type="VARCHAR(20)" defaultValue="OPEN">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="closed_by_id" type="BIGINT"/>
+
+            <column name="closed_at" type="TIMESTAMP"/>
+
+            <column name="comment" type="VARCHAR(800)"/>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="set_inspection"
+                columnNames="set_return_id"
+                constraintName="uq_si_return"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection" baseColumnNames="set_return_id"
+                referencedTableName="set_return" referencedColumnNames="id"
+                constraintName="fk_si_set_return"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection" baseColumnNames="inspected_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_si_inspected_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection" baseColumnNames="received_from_customer_id"
+                referencedTableName="customer" referencedColumnNames="id"
+                constraintName="fk_si_received_from_customer"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection" baseColumnNames="closed_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_si_closed_by"/>
+
+        <createIndex indexName="ix_si_inspected_at" tableName="set_inspection">
+            <column name="inspected_at"/>
+        </createIndex>
+
+        <createIndex indexName="ix_si_inspected_by" tableName="set_inspection">
+            <column name="inspected_by_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_si_received_from_customer" tableName="set_inspection">
+            <column name="received_from_customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_si_status" tableName="set_inspection">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="ix_si_closed_at" tableName="set_inspection">
+            <column name="closed_at"/>
+        </createIndex>
+
+        <createIndex indexName="ix_si_closed_by" tableName="set_inspection">
+            <column name="closed_by_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

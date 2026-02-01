@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="026_create_consignment_item_return_table" author="mrojek">
+
+        <createTable tableName="consignment_item_return">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"
+                             primaryKeyName="pk_consignment_item_return"/>
+            </column>
+
+            <column name="return_number" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="type" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="received_by_id" type="BIGINT"/>
+
+            <column name="received_at" type="TIMESTAMP"/>
+
+            <column name="checked_by_id" type="BIGINT"/>
+
+            <column name="checked_at" type="TIMESTAMP"/>
+
+            <column name="email_content" type="TEXT"/>
+
+            <column name="received_date" type="DATE"/>
+
+            <column name="tracking_number" type="VARCHAR(120)"/>
+
+            <column name="carrier" type="VARCHAR(50)"/>
+
+            <column name="comment" type="VARCHAR(1000)"/>
+
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="consignment_item_return"
+                columnNames="return_number"
+                constraintName="uq_cir_return_number"/>
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_return" baseColumnNames="customer_id"
+                referencedTableName="customer" referencedColumnNames="id"
+                constraintName="fk_cir_return_customer"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_return" baseColumnNames="created_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_cir_return_created_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_return" baseColumnNames="received_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_cir_return_received_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="consignment_item_return" baseColumnNames="checked_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_cir_checked_by"/>
+
+        <createIndex indexName="ix_cir_return_customer" tableName="consignment_item_return">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_return_status" tableName="consignment_item_return">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_return_type" tableName="consignment_item_return">
+            <column name="type"/>
+        </createIndex>
+
+        <createIndex indexName="ix_cir_return_received_date" tableName="consignment_item_return">
+            <column name="received_date"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

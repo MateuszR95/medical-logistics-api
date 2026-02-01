@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="017_create_loaner_request_line" author="mrojek">
+        <createTable tableName="loaner_request_line">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_loaner_request_line"/>
+            </column>
+
+            <column name="loaner_request_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="set_base_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="requested_qty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="loaner_request_line"
+                columnNames="loaner_request_id,set_base_id"
+                constraintName="uq_lr_line_request_setbase"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request_line" baseColumnNames="loaner_request_id"
+                referencedTableName="loaner_request" referencedColumnNames="id"
+                constraintName="fk_lr_line_request"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request_line" baseColumnNames="set_base_id"
+                referencedTableName="set_base" referencedColumnNames="id"
+                constraintName="fk_lr_line_set_base"/>
+
+        <createIndex indexName="ix_lr_line_request" tableName="loaner_request_line">
+            <column name="loaner_request_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_lr_line_setbase" tableName="loaner_request_line">
+            <column name="set_base_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

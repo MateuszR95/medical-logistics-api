@@ -62,4 +62,7 @@ public class Inventory {
 
   @Column(nullable = false)
   private long qty;
+
+  @Column(name = "allocated_qty", nullable = false)
+  private long allocatedQty;
 }

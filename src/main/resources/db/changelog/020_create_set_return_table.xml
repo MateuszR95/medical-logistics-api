@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="020-create-set-return_table" author="mrojek">
+        <createTable tableName="set_return">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_set_return"/>
+            </column>
+
+            <column name="return_number" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="set_instance_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="received_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="received_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="comment" type="VARCHAR(1000)"/>
+        </createTable>
+
+        <addUniqueConstraint
+            tableName="set_return"
+            columnNames="return_number"
+            constraintName="uq_set_return_number"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_return" baseColumnNames="set_instance_id"
+                referencedTableName="set_instance" referencedColumnNames="id"
+                constraintName="fk_sr_set_instance"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_return" baseColumnNames="received_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_sr_received_by"/>
+
+        <createIndex indexName="ix_sr_set_instance" tableName="set_return">
+            <column name="set_instance_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sr_received_at" tableName="set_return">
+            <column name="received_at"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

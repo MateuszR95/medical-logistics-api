@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="035_create_stock_movement_table" author="mrojek">
+
+        <createTable tableName="stock_movement">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_stock_movement"/>
+            </column>
+
+            <column name="movement_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="from_location_id" type="BIGINT"/>
+
+            <column name="to_location_id" type="BIGINT"/>
+
+            <column name="item_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="lot_id" type="BIGINT"/>
+
+            <column name="qty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="posted_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="posted_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ref_type" type="VARCHAR(40)" defaultValue="NONE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ref_id" type="BIGINT"/>
+
+            <column name="comment" type="VARCHAR(800)"/>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="stock_movement" baseColumnNames="from_location_id"
+                referencedTableName="location" referencedColumnNames="id"
+                constraintName="fk_sm_from_location"/>
+
+        <addForeignKeyConstraint
+                baseTableName="stock_movement" baseColumnNames="to_location_id"
+                referencedTableName="location" referencedColumnNames="id"
+                constraintName="fk_sm_to_location"/>
+
+        <addForeignKeyConstraint
+                baseTableName="stock_movement" baseColumnNames="item_id"
+                referencedTableName="item" referencedColumnNames="id"
+                constraintName="fk_sm_item"/>
+
+        <addForeignKeyConstraint
+                baseTableName="stock_movement" baseColumnNames="lot_id"
+                referencedTableName="lot" referencedColumnNames="id"
+                constraintName="fk_sm_lot"/>
+
+        <addForeignKeyConstraint
+                baseTableName="stock_movement" baseColumnNames="posted_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_sm_posted_by"/>
+
+        <createIndex indexName="ix_sm_posted_at" tableName="stock_movement">
+            <column name="posted_at"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sm_type" tableName="stock_movement">
+            <column name="movement_type"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sm_from_location" tableName="stock_movement">
+            <column name="from_location_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sm_to_location" tableName="stock_movement">
+            <column name="to_location_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sm_item" tableName="stock_movement">
+            <column name="item_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sm_lot" tableName="stock_movement">
+            <column name="lot_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_sm_ref" tableName="stock_movement">
+            <column name="ref_type"/>
+            <column name="ref_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

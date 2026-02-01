@@ -105,4 +105,8 @@ VALUES
 
 (71, 'jkooners@byom.de', 'Johan', 'Kooners', 'Customer Service - EDC', 'WAREHOUSE_CUSTOMER_SERVICE', 1, 1, true, '{noop}test', '2024-01-01T10:18:00', NULL),
 (72, 'rhuntelaar@byom.de', 'Robin', 'Huntelaar', 'Customer Service - EDC', 'WAREHOUSE_CUSTOMER_SERVICE', 1, 1, true, '{noop}test', '2023-01-01T10:19:00', NULL),
-(73, 'loomens@byom.de', 'Lutz', 'Loomens', 'Customer Service - EDC', 'WAREHOUSE_CUSTOMER_SERVICE', 1, 1, true, '{noop}test', '2022-01-01T10:19:00', NULL);
+(73, 'loomens@byom.de', 'Lutz', 'Loomens', 'Customer Service - EDC', 'WAREHOUSE_CUSTOMER_SERVICE', 1, 1, true, '{noop}test', '2022-01-01T10:19:00', NULL),
+
+(74, 'okollaren@byom.de', 'Oyvind', 'Kollaren', 'Warehouse Operator - EDC', 'WAREHOUSE_OPERATOR', 1, 1, true, '{noop}test', '2023-01-01T10:19:00', NULL),
+(75, 'lkooler@byom.de', 'Lars', 'Kooler', 'Warehouse Operator - EDC', 'WAREHOUSE_OPERATOR', 1, 1, true, '{noop}test', '2023-01-01T10:19:00', NULL),
+(76, 'snone@byom.de', 'Sven', 'None', 'Warehouse Operator - EDC', 'WAREHOUSE_OPERATOR', 1, 1, true, '{noop}test', '2023-01-01T10:19:00', NULL);

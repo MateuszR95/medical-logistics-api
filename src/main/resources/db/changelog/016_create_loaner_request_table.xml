@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.liquibase.org/xml/ns/dbchangelog
+      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="016_create_loaner_request" author="mrojek">
+        <createTable tableName="loaner_request">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_loaner_request"/>
+            </column>
+
+            <column name="request_number" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="requested_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="modified_by_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ship_to_address_id" type="BIGINT"/>
+
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="voided_at" type="TIMESTAMP"/>
+
+            <column name="planned_shipping_date" type="DATE"/>
+            <column name="surgery_date" type="DATE"/>
+            <column name="shipped_date" type="DATE"/>
+            <column name="expected_return_date" type="DATE"/>
+
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="notes" type="VARCHAR(1000)"/>
+        </createTable>
+
+        <addUniqueConstraint
+                tableName="loaner_request"
+                columnNames="request_number"
+                constraintName="uq_loaner_request_number"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request" baseColumnNames="customer_id"
+                referencedTableName="customer" referencedColumnNames="id"
+                constraintName="fk_lr_customer"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request" baseColumnNames="requested_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_lr_requested_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request" baseColumnNames="modified_by_id"
+                referencedTableName="users" referencedColumnNames="id"
+                constraintName="fk_lr_modified_by"/>
+
+        <addForeignKeyConstraint
+                baseTableName="loaner_request" baseColumnNames="ship_to_address_id"
+                referencedTableName="address" referencedColumnNames="id"
+                constraintName="fk_lr_ship_to_address"/>
+
+        <createIndex indexName="ix_lr_customer" tableName="loaner_request">
+            <column name="customer_id"/>
+        </createIndex>
+
+        <createIndex indexName="ix_lr_status" tableName="loaner_request">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="ix_lr_planned_shipping_date" tableName="loaner_request">
+            <column name="planned_shipping_date"/>
+        </createIndex>
+
+        <createIndex indexName="ix_lr_shipped_date" tableName="loaner_request">
+            <column name="shipped_date"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
