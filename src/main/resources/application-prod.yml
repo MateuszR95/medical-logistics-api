@@ -12,6 +12,12 @@ spring:
   sql:
     init:
       mode: never
+app:
+  inbound:
+    storage-dir: /var/lib/medical-logistics/inbound-receipts
+    default-source-warehouse-code: US-MAIN
+    default-receipt-warehouse-code: EDC-NL
+    default-receipt-location-code: REC-01
 
 
 

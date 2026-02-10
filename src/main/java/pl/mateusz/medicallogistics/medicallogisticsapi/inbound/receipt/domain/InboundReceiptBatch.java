@@ -1,4 +1,4 @@
-package pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.batch.domain;
+package pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain;
 
 
 import jakarta.persistence.CascadeType;
@@ -23,7 +23,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.batch.InboundReceiptBatchStatus;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.InboundReceiptBatchStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.domain.Warehouse;
 

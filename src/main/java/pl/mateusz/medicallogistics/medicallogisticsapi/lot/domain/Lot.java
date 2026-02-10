@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,15 +28,20 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.item.domain.Item;
 @Table(
     name = "lot",
     uniqueConstraints = @UniqueConstraint(
-        name = "unique_lot_number_per_item",
-        columnNames = {"lot_number", "item_id"}
+        name = "unique_expiration_date_per_lot_number",
+        columnNames = {"lot_number", "expiration_date"}
     )
 )
+
 public class Lot {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @Column(name = "lot_number", nullable = false)
+  @Pattern(
+      regexp = "^[A-Z]{3}[0-9]{3}[A-Z]{2}$",
+      message = "Lot number must match pattern: ABC123AB"
+  )
   private String lotNumber;
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(

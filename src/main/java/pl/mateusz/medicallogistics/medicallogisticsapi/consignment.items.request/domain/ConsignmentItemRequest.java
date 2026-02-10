@@ -18,6 +18,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +31,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request
 import pl.mateusz.medicallogistics.medicallogisticsapi.customer.domain.Customer;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
+
 
 
 /**

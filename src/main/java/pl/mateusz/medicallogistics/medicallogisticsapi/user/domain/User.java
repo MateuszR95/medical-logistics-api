@@ -29,9 +29,9 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.user.UserRole;
  * Entity representing a user in the medical logistics system.
  */
 @Entity
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 @Table(
     name = "users",
     uniqueConstraints = @UniqueConstraint(
@@ -88,6 +88,7 @@ public class User {
 
   @Column(name = "password_changed_at")
   private LocalDateTime passwordChangedAt;
+
 
 
 }
