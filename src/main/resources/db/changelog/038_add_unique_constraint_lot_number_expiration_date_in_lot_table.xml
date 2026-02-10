@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="038_add_unique_constraint_lot_number_expiration_date_in_lot_table" author="mrojek">
+        <addUniqueConstraint
+                tableName="lot"
+                columnNames="lot_number, expiration_date"
+                constraintName="unique_expiration_date_per_lot_number"/>
+    </changeSet>
+
+</databaseChangeLog>

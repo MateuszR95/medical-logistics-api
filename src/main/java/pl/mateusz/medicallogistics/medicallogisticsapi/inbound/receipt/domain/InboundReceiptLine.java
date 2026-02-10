@@ -1,4 +1,4 @@
-package pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.batch.domain;
+package pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +17,8 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.batch.InboundReceiptLineStatus;
-import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.batch.InboundReceiptLineType;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.InboundReceiptLineStatus;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.InboundReceiptLineType;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.domain.Item;
 import pl.mateusz.medicallogistics.medicallogisticsapi.lot.domain.Lot;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
@@ -61,7 +61,6 @@ public class InboundReceiptLine {
   @Column(name = "qty", nullable = false)
   private long qty;
 
-  // resolved references after mapping
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "resolved_item_id",
       foreignKey = @ForeignKey(name = "fk_irl_resolved_item"))
@@ -82,6 +81,9 @@ public class InboundReceiptLine {
 
   @Column(name = "set_tag_id", length = 20)
   private String setTagId;
+
+  @Column(name = "set_catalog_number", length = 20)
+  private String setCatalogNumber;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "resolved_set_instance_id",

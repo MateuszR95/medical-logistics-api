@@ -92,5 +92,4 @@ public class SetInstance {
   @Column(nullable = false)
   private boolean active = true;
 
-
 }

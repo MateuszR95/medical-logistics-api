@@ -1,4 +1,4 @@
-package pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.batch;
+package pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt;
 
 /**
  * Enum representing the type of an inbound receipt line.

@@ -46,4 +46,5 @@ public class Warehouse {
 
   @Column(nullable = false)
   private boolean active = true;
+
 }

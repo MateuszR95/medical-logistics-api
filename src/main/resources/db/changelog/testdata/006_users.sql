@@ -4,7 +4,7 @@ VALUES
 
 (1, 'sgalaxy@byom.de', 'Sebastian', 'Galaxy', 'VP Europe Operations', 'MANAGER', 1, NULL, true, '{noop}test', '2025-01-01T09:00:00', NULL),
 
-(2, 'aklein@byom.de', 'Adam', 'Klein', 'Global Admin', 'ADMIN', 1, 1, true, '{noop}test', '2025-01-01T09:05:00', NULL),
+(2, 'admin@byom.de', 'Adam', 'Klein', 'Global Admin', 'ADMIN', 1, 1, true, '{noop}admin', '2025-01-01T09:05:00', NULL),
 (3, 'bwagner@byom.de', 'Beata', 'Wagner', 'Global Admin', 'ADMIN', 1, 1, true, '{noop}test', '2025-01-01T09:06:00', NULL),
 
 (4, 'nivanov@byom.de', 'Nina', 'Ivanov', 'Regional Director - Northern Europe', 'MANAGER', 2, 1, true, '{noop}test', '2025-01-01T09:10:00', NULL),
