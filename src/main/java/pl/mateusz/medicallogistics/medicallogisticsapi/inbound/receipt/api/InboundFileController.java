@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.dto.InboundReceiptBatchDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.service.InboundReceiptImportService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.service.InboundReceiptValidationService;
+import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.service.InventoryService;
 
 /**
  * REST controller for handling inbound receipt file uploads.
@@ -24,16 +25,21 @@ public class InboundFileController {
   private final InboundReceiptImportService storageService;
   private final InboundReceiptValidationService validationService;
 
+  private final InventoryService inventoryService;
+
   /**
-   * Constructs a new InboundFileController with the specified services.
+   * Constructs an InboundFileController with the specified services.
    *
-   * @param storageService the service responsible for importing and storing inbound receipt files
-   * @param validationService the service responsible for validating inbound receipt files
+   * @param storageService the service for handling file storage and batch creation
+   * @param validationService the service for validating the contents of the uploaded file
+   * @param inventoryService the service for managing inventory updates based on the uploaded data
    */
   public InboundFileController(InboundReceiptImportService storageService,
-                               InboundReceiptValidationService validationService) {
+                               InboundReceiptValidationService validationService,
+                               InventoryService inventoryService) {
     this.storageService = storageService;
     this.validationService = validationService;
+    this.inventoryService = inventoryService;
   }
 
   /**
@@ -47,7 +53,7 @@ public class InboundFileController {
                                   Authentication authentication) throws IOException {
     String email = authentication.getName();
     InboundReceiptBatchDto batch = storageService.importFileAndCreateBatch(file, email);
-    validationService.validateReceiptFile(batch.getFileName());
+    validationService.processInboundReceiptFile(batch.getFileName());
     return ResponseEntity.ok(Map.of(
       "fileName", batch.getFileName(),
       "batchNumber", batch.getBatchNumber(),
