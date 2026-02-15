@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.dto.InboundReceiptBatchDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.service.InboundReceiptImportService;
-import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.service.InboundReceiptValidationService;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.service.InboundReceiptProcessService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.service.InventoryService;
 
 /**
@@ -23,7 +23,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.service.Invento
 public class InboundFileController {
 
   private final InboundReceiptImportService storageService;
-  private final InboundReceiptValidationService validationService;
+  private final InboundReceiptProcessService validationService;
 
   private final InventoryService inventoryService;
 
@@ -35,7 +35,7 @@ public class InboundFileController {
    * @param inventoryService the service for managing inventory updates based on the uploaded data
    */
   public InboundFileController(InboundReceiptImportService storageService,
-                               InboundReceiptValidationService validationService,
+                               InboundReceiptProcessService validationService,
                                InventoryService inventoryService) {
     this.storageService = storageService;
     this.validationService = validationService;

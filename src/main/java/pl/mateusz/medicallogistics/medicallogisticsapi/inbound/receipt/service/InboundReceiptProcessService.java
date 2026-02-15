@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.mateusz.medicallogistics.medicallogisticsapi.config.InboundConfiguration;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptBatch;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptLine;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.dto.InboundReceiptLineDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.domain.Item;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.service.ItemService;
@@ -29,6 +32,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetBase;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.dto.SetInstanceDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetBaseService;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceMaterialService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.service.InventoryService;
 
@@ -38,10 +42,10 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.service.Invento
  * and logs any validation errors encountered during the process.
  */
 @Service
-public class InboundReceiptValidationService {
+public class InboundReceiptProcessService {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(InboundReceiptValidationService.class);
+      LoggerFactory.getLogger(InboundReceiptProcessService.class);
 
   private final Path storageDir;
   private final Validator validator;
@@ -58,10 +62,13 @@ public class InboundReceiptValidationService {
 
   private final InventoryService inventoryService;
 
+  private final SetInstanceMaterialService setInstanceMaterialService;
+  private static final String SET_LINE_TYPE = "SET";
+
   /**
-   * Constructs an InboundReceiptValidationService with the specified dependencies.
+   * Constructs an InboundReceiptProcessService with the specified dependencies.
    *
-   * @param inboundConfiguration the configuration containing storage directory settings
+   * @param inboundConfiguration the configuration containing settings for inbound processing
    * @param validator the validator for validating DTOs
    * @param inboundReceiptLineService the service for managing inbound receipt lines
    * @param inboundReceiptBatchService the service for managing inbound receipt batches
@@ -70,15 +77,17 @@ public class InboundReceiptValidationService {
    * @param setInstanceService the service for managing set instances
    * @param setBaseService the service for managing set bases
    * @param inventoryService the service for managing inventory updates
+   * @param setInstanceMaterialService the service for managing set instance materials
    */
-  public InboundReceiptValidationService(InboundConfiguration inboundConfiguration,
-                                         Validator validator,
-                                         InboundReceiptLineService inboundReceiptLineService,
-                                         InboundReceiptBatchService inboundReceiptBatchService,
-                                         ItemService itemService, LotService lotService,
-                                         SetInstanceService setInstanceService,
-                                         SetBaseService setBaseService,
-                                         InventoryService inventoryService) {
+  public InboundReceiptProcessService(InboundConfiguration inboundConfiguration,
+                                      Validator validator,
+                                      InboundReceiptLineService inboundReceiptLineService,
+                                      InboundReceiptBatchService inboundReceiptBatchService,
+                                      ItemService itemService, LotService lotService,
+                                      SetInstanceService setInstanceService,
+                                      SetBaseService setBaseService,
+                                      InventoryService inventoryService,
+                                      SetInstanceMaterialService setInstanceMaterialService) {
     this.storageDir = inboundConfiguration.getStorageDir();
     this.validator = validator;
     this.inboundReceiptLineService = inboundReceiptLineService;
@@ -88,6 +97,7 @@ public class InboundReceiptValidationService {
     this.setInstanceService = setInstanceService;
     this.setBaseService = setBaseService;
     this.inventoryService = inventoryService;
+    this.setInstanceMaterialService = setInstanceMaterialService;
   }
 
   /**
@@ -113,6 +123,7 @@ public class InboundReceiptValidationService {
     ) {
       reader.readLine();
       String fileLine = null;
+      Map<String, SetInstance> setInstanceCache = new HashMap<>();
       while ((fileLine = reader.readLine()) != null) {
 
         String trimmedFileLine = fileLine.replaceAll("\\s", "");
@@ -125,6 +136,7 @@ public class InboundReceiptValidationService {
         InboundReceiptLineDto receiptLineDto;
         try {
           receiptLineDto = mapToDtoFromLineItems(fileLineItems);
+          receiptLineDto.setBatchId(inboundReceiptBatch.getId());
         } catch (RuntimeException ex) {
           logger.error("Invalid line (parsing failed): {} ({})", fileLine, ex.getMessage());
           saveWrongLineToErrorFile(fileLine, fileName);
@@ -142,35 +154,40 @@ public class InboundReceiptValidationService {
           LocalDate expirationDate = parseExpirationDateOrNull(receiptLineDto.getExpirationDate());
           Lot lot = lotByLotNumberOptional.orElseGet(() -> lotService.createAndSaveLot(
               receiptLineDto.getLotNumber(), itemByRefNumber, expirationDate));
-          inboundReceiptLineDto = createAndSaveInboundReceiptLine(receiptLineDto,
-            inboundReceiptBatch, itemByRefNumber, lot);
-          inventoryService.updateInventoryAfterInboundReceipt(inboundReceiptLineDto);
+          InboundReceiptLine savedInboundReceiptLine = createAndSaveInboundReceiptLine(
+              receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, setInstanceCache);
+          if (SET_LINE_TYPE.equals(savedInboundReceiptLine.getLineType().name())) {
+            setInstanceMaterialService.createAndSaveSetInstanceMaterialFromInboundReceiptLine(
+                savedInboundReceiptLine);
+          }
+          inventoryService.updateInventoryAfterInboundReceipt(savedInboundReceiptLine);
         }
       }
     }
   }
 
-  private InboundReceiptLineDto createAndSaveInboundReceiptLine(
+  private InboundReceiptLine createAndSaveInboundReceiptLine(
       InboundReceiptLineDto receiptLineDto, InboundReceiptBatch inboundReceiptBatch,
-      Item itemByRefNumber, Lot lot) {
-    InboundReceiptLineDto inboundReceiptLineDto;
-    if (receiptLineDto.getLineType().equals("SET")) {
-      SetInstanceDto setInstanceDto = createSetInstanceDtoFromInboundReceiptLineDto(
-          receiptLineDto);
-      SetBase setBase = setBaseService.findByCatalogNumber(receiptLineDto
-          .getSetCatalogNumber())
-          .orElseThrow(() -> new IllegalArgumentException(
-          "Set base not found for catalog number: " + receiptLineDto.getSetCatalogNumber()));
-      SetInstance savedSetInstance = setInstanceService
-          .createAndSaveSetInstanceFromInboundReceipt(setInstanceDto, setBase);
-      inboundReceiptLineDto = inboundReceiptLineService.save(
-        receiptLineDto, inboundReceiptBatch, itemByRefNumber,
-        lot, savedSetInstance);
-    } else {
-      inboundReceiptLineDto = inboundReceiptLineService.save(receiptLineDto,
-        inboundReceiptBatch, itemByRefNumber, lot, null);
+      Item itemByRefNumber, Lot lot,  Map<String, SetInstance> setInstanceCache) {
+
+    if (SET_LINE_TYPE.equalsIgnoreCase(receiptLineDto.getLineType())) {
+      String tag = receiptLineDto.getSetTagId().trim();
+      SetInstance savedSetInstance = setInstanceCache.get(tag);
+      if (savedSetInstance == null) {
+        SetInstanceDto setInstanceDto = createSetInstanceDtoFromInboundReceiptLineDto(
+            receiptLineDto);
+        SetBase setBase = setBaseService.findByCatalogNumber(receiptLineDto.getSetCatalogNumber())
+            .orElseThrow(() -> new IllegalArgumentException(
+            "Set base not found for catalog number: " + receiptLineDto.getSetCatalogNumber()));
+        savedSetInstance = setInstanceService.createAndSaveSetInstanceFromInboundReceipt(
+            setInstanceDto, setBase);
+        setInstanceCache.put(tag, savedSetInstance);
+      }
+      return inboundReceiptLineService.save(
+        receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, savedSetInstance);
     }
-    return inboundReceiptLineDto;
+    return inboundReceiptLineService.save(
+      receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, null);
   }
 
   private static LocalDate parseExpirationDateOrNull(String expirationDate) {

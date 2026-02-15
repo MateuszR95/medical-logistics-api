@@ -3,7 +3,7 @@ package pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.mateusz.medicallogistics.medicallogisticsapi.config.InboundConfiguration;
-import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.dto.InboundReceiptLineDto;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptLine;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.domain.Item;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.repository.ItemRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.lot.domain.Lot;
@@ -29,7 +29,7 @@ public class InventoryService {
   private final ItemRepository itemRepository;
 
   private final LotRepository lotRepository;
-  private static final String INBOUND_RECEIPT_LINE_TYPE = "ITEM";
+  private static final String ITEM_TYPE_LINE = "ITEM";
 
 
   /**
@@ -54,18 +54,21 @@ public class InventoryService {
   }
 
   /**
-   * Updates the inventory records after processing an inbound receipt line.
-   *
-   * @param inboundReceiptLineDto the DTO containing information about the inbound receipt line
+   * Updates the inventory based on the provided inbound receipt line.
+   * If the line type is "ITEM", it will either update an existing inventory
+   * record or create a new one.
+   * @param inboundReceiptLine the line item from the inbound receipt to process for inventory update
+   * @throws RuntimeException if the default receipt location, item, or lot is not found
    */
   @Transactional
-  public void updateInventoryAfterInboundReceipt(InboundReceiptLineDto inboundReceiptLineDto) {
-    if (!INBOUND_RECEIPT_LINE_TYPE.equals(inboundReceiptLineDto.getLineType())) {
+  public void updateInventoryAfterInboundReceipt(InboundReceiptLine inboundReceiptLine) {
+
+    if (!ITEM_TYPE_LINE.equals(inboundReceiptLine.getLineType().name())) {
       return;
     }
-    long qty = inboundReceiptLineDto.getQty();
-    String ref = inboundReceiptLineDto.getItemRefNumber();
-    String lotNo = inboundReceiptLineDto.getLotNumber();
+    long qty = inboundReceiptLine.getQty();
+    String ref = inboundReceiptLine.getItemRefNumber();
+    String lotNo = inboundReceiptLine.getLotNumber();
 
     Location location = locationRepository.findByCode(
         inboundConfiguration.getDefaultReceiptLocationCode()
