@@ -3,9 +3,13 @@ package pl.mateusz.medicallogistics.medicallogisticsapi.validation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptLine;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.dto.InboundReceiptLineDto;
+import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.repository.InboundReceiptLineRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.lot.repository.LotRepository;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetInstanceRepository;
 
 /**
  * Validator for InboundReceiptLineDto to enforce custom validation rules.
@@ -16,13 +20,26 @@ public class InboundReceiptLineValidator implements ConstraintValidator<
   
   private final LotRepository lotRepository;
 
+  private final SetInstanceRepository setInstanceRepository;
+
+  private final InboundReceiptLineRepository inboundReceiptLineRepository;
+
+  private static final String SET_LINE_TYPE = "SET";
+
+
   /**
-   * Constructs an InboundReceiptLineValidator with the specified LotRepository.
+   * Constructor for InboundReceiptLineValidator.
    *
-   * @param lotRepository the repository for accessing Lot entities
+   * @param lotRepository Repository for accessing lot data.
+   * @param setInstanceRepository Repository for accessing set instance data.
+   * @param inboundReceiptLineRepository Repository for accessing inbound receipt line data.
    */
-  public InboundReceiptLineValidator(LotRepository lotRepository) {
+  public InboundReceiptLineValidator(LotRepository lotRepository,
+                                     SetInstanceRepository setInstanceRepository,
+                                     InboundReceiptLineRepository inboundReceiptLineRepository) {
     this.lotRepository = lotRepository;
+    this.setInstanceRepository = setInstanceRepository;
+    this.inboundReceiptLineRepository = inboundReceiptLineRepository;
   }
 
   @Override
@@ -41,9 +58,30 @@ public class InboundReceiptLineValidator implements ConstraintValidator<
     isValid &= validateSetTagIdForSetTypeLine(dto, ctx);
     isValid &= validateUniqueExpirationDateForLotNumber(dto, ctx);
     isValid &= validateUniqueLotNumberForRefNumber(dto, ctx);
+    if (SET_LINE_TYPE.equalsIgnoreCase(dto.getLineType())) {
+      isValid &= validateUniqueSetTagIdNumber(dto, ctx);
+    }
     return isValid;
   }
 
+  private boolean validateUniqueSetTagIdNumber(InboundReceiptLineDto dto,
+                                                      ConstraintValidatorContext ctx) {
+    Long lineBatchId = dto.getBatchId();
+    String lineSetTagId = dto.getSetTagId();
+    boolean existsByTagId = setInstanceRepository.existsByTagId(dto.getSetTagId());
+    if (existsByTagId) {
+      Optional<InboundReceiptLine> receiptLineDtoOptional = inboundReceiptLineRepository
+          .findFirstByBatchIdAndSetTagId(lineBatchId, lineSetTagId);
+      if (receiptLineDtoOptional.isEmpty()) {
+        addFieldViolation(ctx, "setTagId",
+            "This set tag ID is already assigned to a different batch.");
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  }
 
   private boolean validateUniqueLotNumberForRefNumber(InboundReceiptLineDto dto,
                                                            ConstraintValidatorContext ctx) {
@@ -77,16 +115,23 @@ public class InboundReceiptLineValidator implements ConstraintValidator<
 
   private static boolean validateSetTagIdForSetTypeLine(InboundReceiptLineDto dto,
                                                         ConstraintValidatorContext ctx) {
-    String setCatalogNumber = dto.getSetCatalogNumber();
-    if (setCatalogNumber != null && !setCatalogNumber.isBlank()) {
-      String setTagId = dto.getSetTagId();
-      if (setTagId == null || setTagId.isBlank()) {
-        addFieldViolation(ctx, "setTagId",
-            "SetTagId is required when SetCatalogNumber is provided.");
-        return false;
-      }
+    if (!"SET".equalsIgnoreCase(dto.getLineType())) {
+      return true;
     }
-    return true;
+    boolean isValid = true;
+    String setCatalogNumber = dto.getSetCatalogNumber();
+    if (setCatalogNumber == null || setCatalogNumber.isBlank()) {
+      addFieldViolation(ctx, "setCatalogNumber",
+           "setCatalogNumber is required when lineType is SET.");
+      isValid = false;
+    }
+    String setTagId = dto.getSetTagId();
+    if (setTagId == null || setTagId.isBlank()) {
+      addFieldViolation(ctx, "setTagId",
+          "setTagId is required when lineType is SET.");
+      isValid = false;
+    }
+    return isValid;
   }
 
   private static boolean validateExpirationDateForSterileItem(InboundReceiptLineDto dto,

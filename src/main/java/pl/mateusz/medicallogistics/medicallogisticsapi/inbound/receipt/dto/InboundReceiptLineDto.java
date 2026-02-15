@@ -12,7 +12,6 @@ import lombok.Setter;
 import pl.mateusz.medicallogistics.medicallogisticsapi.validation.CorrectInboundReceiptLineType;
 import pl.mateusz.medicallogistics.medicallogisticsapi.validation.ItemRefNumberExists;
 import pl.mateusz.medicallogistics.medicallogisticsapi.validation.SetCatalogNumberExists;
-import pl.mateusz.medicallogistics.medicallogisticsapi.validation.SetTagIdAlreadyExists;
 import pl.mateusz.medicallogistics.medicallogisticsapi.validation.ValidInboundReceiptLine;
 
 /**
@@ -49,7 +48,8 @@ public class InboundReceiptLineDto {
   private long qty;
   @SetCatalogNumberExists
   private String setCatalogNumber;
-  @SetTagIdAlreadyExists
   private String setTagId;
+  private Long batchId;
+
 
 }

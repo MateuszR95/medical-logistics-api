@@ -18,4 +18,15 @@ public interface InboundReceiptLineRepository extends JpaRepository<InboundRecei
    * @return an Optional containing the found InboundReceiptLine, or empty if not found
    */
   Optional<InboundReceiptLine> findByBatchId(long batchId);
+
+  /**
+   * Finds the first InboundReceiptLine by batch ID and set tag ID.
+   *
+   * @param batchId the ID of the batch to search for
+   * @param setTagId the set tag ID to search for
+   * @return an Optional containing the found InboundReceiptLine, or empty if not found
+   */
+  Optional<InboundReceiptLine> findFirstByBatchIdAndSetTagId(long batchId,
+                                                             String setTagId);
+
 }

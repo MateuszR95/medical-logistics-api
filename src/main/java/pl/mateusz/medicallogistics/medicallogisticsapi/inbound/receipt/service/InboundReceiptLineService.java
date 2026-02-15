@@ -31,20 +31,22 @@ public class InboundReceiptLineService {
   }
 
   /**
-   * Saves an inbound receipt line based on the provided DTO and associated batch.
+   * Saves an inbound receipt line based on the provided DTO and associated entities.
    *
-   * @param lineDto the DTO containing the details of the inbound receipt line to be saved
-   * @param batch the associated InboundReceiptBatch to which the line belongs
-   * @return the saved InboundReceiptLineDto representing the persisted line item
+   * @param lineDto the DTO containing information about the inbound receipt line
+   * @param batch the batch to which the line belongs
+   * @param resolveItem the resolved Item entity based on the item reference number in the DTO
+   * @param resolvedLot the resolved Lot entity based on the lot number in the DTO
+   * @param resolvedSet the resolved SetInstance entity based on the set catalog number in the DTO
+   * @return the saved InboundReceiptLine entity
    */
   @Transactional
-  public InboundReceiptLineDto save(InboundReceiptLineDto lineDto,
+  public InboundReceiptLine save(InboundReceiptLineDto lineDto,
                                     InboundReceiptBatch batch, Item resolveItem, Lot resolvedLot,
                                     SetInstance resolvedSet) {
     InboundReceiptLine inboundReceiptLine = InboundReceiptLineDtoMapper.mapToEntity(
         lineDto, batch, resolveItem, resolvedLot, resolvedSet);
-    InboundReceiptLine savedInboundReceiptLine = inboundReceiptLineRepository
+    return inboundReceiptLineRepository
         .save(inboundReceiptLine);
-    return InboundReceiptLineDtoMapper.mapToDto(savedInboundReceiptLine);
   }
 }
