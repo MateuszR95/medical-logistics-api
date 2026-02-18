@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="043_fix_set_inspection_fk" author="mrojek">
+
+        <renameColumn tableName="set_inspection"
+                      oldColumnName="set_return_id"
+                      newColumnName="set_receipt_id"
+                      columnDataType="BIGINT"/>
+
+        <dropForeignKeyConstraint baseTableName="set_inspection"
+                                  constraintName="fk_si_set_return"/>
+
+        <addForeignKeyConstraint
+                baseTableName="set_inspection"
+                baseColumnNames="set_receipt_id"
+                referencedTableName="set_receipt"
+                referencedColumnNames="id"
+                constraintName="fk_si_set_receipt"/>
+    </changeSet>
+
+
+
+</databaseChangeLog>

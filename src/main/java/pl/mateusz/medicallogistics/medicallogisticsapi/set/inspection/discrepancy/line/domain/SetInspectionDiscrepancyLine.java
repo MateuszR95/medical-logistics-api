@@ -1,4 +1,5 @@
-package pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.missing.line.domain;
+package pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.domain;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,9 +21,9 @@ import lombok.Setter;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.domain.Item;
 import pl.mateusz.medicallogistics.medicallogisticsapi.loaner.request.domain.LoanerRequest;
 import pl.mateusz.medicallogistics.medicallogisticsapi.lot.domain.Lot;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.SetInspectionDiscrepancyResolution;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.SetInspectionDiscrepancyType;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.domain.SetInspection;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.missing.line.SetInspectionDiscrepancyResolution;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.missing.line.SetInspectionDiscrepancyType;
 
 /**
  * Entity representing a discrepancy line item found during a set inspection,

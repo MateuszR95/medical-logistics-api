@@ -27,5 +27,4 @@ public class SetInstanceDto {
   private String setStatus;
   private boolean isActive;
 
-
 }

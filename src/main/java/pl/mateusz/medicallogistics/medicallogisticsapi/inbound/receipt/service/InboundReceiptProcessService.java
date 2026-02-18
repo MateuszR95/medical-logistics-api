@@ -18,6 +18,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.mateusz.medicallogistics.medicallogisticsapi.config.InboundConfiguration;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptBatch;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptLine;
@@ -31,6 +32,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.set.SetType;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetBase;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.dto.SetInstanceDto;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.service.SetReceiptService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetBaseService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceMaterialService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceService;
@@ -63,13 +65,16 @@ public class InboundReceiptProcessService {
   private final InventoryService inventoryService;
 
   private final SetInstanceMaterialService setInstanceMaterialService;
+
+  private final SetReceiptService setReceiptService;
   private static final String SET_LINE_TYPE = "SET";
 
   /**
-   * Constructs an InboundReceiptProcessService with the specified dependencies.
+   * Constructs an instance of InboundReceiptProcessService with the necessary dependencies.
    *
-   * @param inboundConfiguration the configuration containing settings for inbound processing
-   * @param validator the validator for validating DTOs
+   * @param inboundConfiguration the configuration for inbound processing,
+   *                             providing the storage directory
+   * @param validator the validator for validating receipt line DTOs
    * @param inboundReceiptLineService the service for managing inbound receipt lines
    * @param inboundReceiptBatchService the service for managing inbound receipt batches
    * @param itemService the service for managing items
@@ -78,6 +83,7 @@ public class InboundReceiptProcessService {
    * @param setBaseService the service for managing set bases
    * @param inventoryService the service for managing inventory updates
    * @param setInstanceMaterialService the service for managing set instance materials
+   * @param setReceiptService the service for managing set receipts
    */
   public InboundReceiptProcessService(InboundConfiguration inboundConfiguration,
                                       Validator validator,
@@ -87,7 +93,8 @@ public class InboundReceiptProcessService {
                                       SetInstanceService setInstanceService,
                                       SetBaseService setBaseService,
                                       InventoryService inventoryService,
-                                      SetInstanceMaterialService setInstanceMaterialService) {
+                                      SetInstanceMaterialService setInstanceMaterialService,
+                                      SetReceiptService setReceiptService) {
     this.storageDir = inboundConfiguration.getStorageDir();
     this.validator = validator;
     this.inboundReceiptLineService = inboundReceiptLineService;
@@ -98,6 +105,7 @@ public class InboundReceiptProcessService {
     this.setBaseService = setBaseService;
     this.inventoryService = inventoryService;
     this.setInstanceMaterialService = setInstanceMaterialService;
+    this.setReceiptService = setReceiptService;
   }
 
   /**
@@ -107,6 +115,7 @@ public class InboundReceiptProcessService {
    * @throws IOException if an I/O error occurs while reading the file
    * @throws IllegalArgumentException if the file path is invalid or the file is not found
    */
+  @Transactional
   public void processInboundReceiptFile(String fileName) throws IOException {
     InboundReceiptLineDto inboundReceiptLineDto = null;
     InboundReceiptBatch inboundReceiptBatch = inboundReceiptBatchService
@@ -169,7 +178,7 @@ public class InboundReceiptProcessService {
   private InboundReceiptLine createAndSaveInboundReceiptLine(
       InboundReceiptLineDto receiptLineDto, InboundReceiptBatch inboundReceiptBatch,
       Item itemByRefNumber, Lot lot,  Map<String, SetInstance> setInstanceCache) {
-
+    InboundReceiptLine savedInboundReceiptLine;
     if (SET_LINE_TYPE.equalsIgnoreCase(receiptLineDto.getLineType())) {
       String tag = receiptLineDto.getSetTagId().trim();
       SetInstance savedSetInstance = setInstanceCache.get(tag);
@@ -183,11 +192,15 @@ public class InboundReceiptProcessService {
             setInstanceDto, setBase);
         setInstanceCache.put(tag, savedSetInstance);
       }
-      return inboundReceiptLineService.save(
+      savedInboundReceiptLine = inboundReceiptLineService.save(
         receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, savedSetInstance);
+      setReceiptService.createAndSaveSetReceiptFromInboundReceipt(savedSetInstance,
+          inboundReceiptBatch);
+    } else {
+      savedInboundReceiptLine = inboundReceiptLineService.save(
+          receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, null);
     }
-    return inboundReceiptLineService.save(
-      receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, null);
+    return savedInboundReceiptLine;
   }
 
   private static LocalDate parseExpirationDateOrNull(String expirationDate) {

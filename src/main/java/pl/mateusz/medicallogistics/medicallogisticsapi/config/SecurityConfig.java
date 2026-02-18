@@ -1,6 +1,5 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.config;
 
-import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -29,7 +28,11 @@ public class SecurityConfig {
     http
         .authorizeHttpRequests(auth -> auth
         .requestMatchers("/h2-console/**").permitAll()
+        .requestMatchers("/api/set-inspections/perform-inspection").hasAnyRole("ADMIN",
+            "WAREHOUSE_CUSTOMER_SERVICE", "WAREHOUSE_OPERATOR")
         .requestMatchers("/api/inbound-files/**").hasAnyRole("ADMIN")
+        .requestMatchers("/api/set-instances/**",
+          "/api/set-inspections/missing-parts").authenticated()
         .anyRequest().authenticated()
 
       )

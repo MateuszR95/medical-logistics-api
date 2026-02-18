@@ -1,8 +1,11 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.set.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.mateusz.medicallogistics.medicallogisticsapi.config.InboundConfiguration;
+import pl.mateusz.medicallogistics.medicallogisticsapi.exception.ResourceNotFoundException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.SetStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.SetType;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetBase;
@@ -83,5 +86,53 @@ public class SetInstanceService {
     setInstance.setSetStatus(SetStatus.INBOUND);
     setInstance.setActive(true);
     return setInstanceRepository.save(setInstance);
+  }
+
+  /**
+   * Retrieves a list of SetInstanceDto objects for all SetInstances with the specified SetStatus.
+   * This method queries the database for SetInstances matching the given status, maps them to DTOs,
+   * and returns the list of DTOs.
+   *
+   * @param setStatus the SetStatus to filter by
+   * @return a List of SetInstanceDto objects representing the SetInstances
+   *      with the specified status
+   */
+  public List<SetInstanceDto> findSetInstancesByStatus(SetStatus setStatus) {
+    List<SetInstance> setInstances = setInstanceRepository.findBySetStatus(setStatus);
+    return setInstances.stream()
+        .map(SetInstanceDtoMapper::mapToDto)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves a list of SetInstanceDto objects for all SetInstances in the database.
+   * This method queries the database for all SetInstances, maps them to DTOs,
+   * and returns the list of DTOs.
+   *
+   * @return a List of SetInstanceDto objects representing all SetInstances in the database
+   */
+  public List<SetInstanceDto> findAllSetInstances() {
+    List<SetInstance> setInstances = setInstanceRepository.findAllBy();
+    return setInstances.stream()
+        .map(SetInstanceDtoMapper::mapToDto)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves a list of SetInstanceDto objects for all SetInstances that are pending checking.
+   * This method queries the database for SetInstances with statuses indicating
+   * they are pending checking,
+   * maps them to DTOs, and returns the list of DTOs.
+   *
+   * @return a List of SetInstanceDto objects representing the SetInstances
+   *      that are pending checking
+   */
+  public List<SetInstanceDto> findAllSetsPendingChecking() {
+    return setInstanceRepository.findAllSetInstancesPendingChecking()
+      .stream().map(SetInstanceDtoMapper::mapToDto).collect(Collectors.toList());
+  }
+
+  public void moveSetInstanceToLocation(String setTagId, String locationCode) {
+
   }
 }
