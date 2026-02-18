@@ -25,8 +25,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.mateusz.medicallogistics.medicallogisticsapi.customer.domain.Customer;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.SetInspectionStatus;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.missing.line.domain.SetInspectionDiscrepancyLine;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.domain.SetReturn;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.domain.SetInspectionDiscrepancyLine;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.domain.SetReceipt;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 
 
@@ -40,7 +40,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 @Table(
     name = "set_inspection",
     uniqueConstraints = {
-      @UniqueConstraint(name = "uq_si_return", columnNames = {"set_return_id"})},
+      @UniqueConstraint(name = "uq_si_return", columnNames = {"set_receipt_id"})},
     indexes = {
       @Index(name = "ix_si_inspected_at", columnList = "inspected_at"),
       @Index(name = "ix_si_inspected_by", columnList = "inspected_by_id"),
@@ -57,11 +57,11 @@ public class SetInspection {
 
   @OneToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(
-      name = "set_return_id",
+      name = "set_receipt_id",
       nullable = false,
-      foreignKey = @ForeignKey(name = "fk_si_set_return")
+      foreignKey = @ForeignKey(name = "fk_si_set_receipt")
   )
-  private SetReturn setReturn;
+  private SetReceipt setReceipt;
 
   @Column(name = "inspected_at", nullable = false)
   private LocalDateTime inspectedAt;

@@ -1,7 +1,10 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.set.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.SetStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
 
 /**
@@ -25,4 +28,29 @@ public interface SetInstanceRepository extends JpaRepository<SetInstance, Long> 
    *      SetInstance with the given tag ID exists
    */
   Optional<SetInstance> findByTagId(String setTagId);
+
+  /**
+   * Finds all SetInstances with the given SetStatus.
+   *
+   * @param setStatus the SetStatus to filter by
+   * @return a List of SetInstances with the specified SetStatus
+   */
+  List<SetInstance> findBySetStatus(SetStatus setStatus);
+
+  /**
+   * Finds all SetInstances that are pending checking, which includes those with
+   * the status 'PENDING_CHECKING' or 'CHECKING_IN_PROGRESS'.
+   *
+   * @return a List of SetInstances that are pending checking
+   */
+  @Query("select si from SetInstance si where si.setStatus = 'RETURNED_PENDING_CHECK' "
+      + "or si.setStatus = 'INBOUND'")
+  List<SetInstance> findAllSetInstancesPendingChecking();
+
+  /**
+   * Finds all SetInstances in the database.
+   *
+   * @return a List of all SetInstances
+   */
+  List<SetInstance> findAllBy();
 }

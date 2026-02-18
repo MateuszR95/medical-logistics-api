@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="041_rename_return_number_column_in_set_receipt" author="mrojek">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="set_receipt" columnName="return_number"/>
+        </preConditions>
+
+        <renameColumn tableName="set_receipt"
+                      oldColumnName="return_number"
+                      newColumnName="receipt_number"
+                      columnDataType="VARCHAR(30)"/>
+    </changeSet>
+
+
+</databaseChangeLog>

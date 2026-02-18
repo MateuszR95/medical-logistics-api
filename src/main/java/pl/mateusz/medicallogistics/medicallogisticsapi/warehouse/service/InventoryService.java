@@ -57,7 +57,9 @@ public class InventoryService {
    * Updates the inventory based on the provided inbound receipt line.
    * If the line type is "ITEM", it will either update an existing inventory
    * record or create a new one.
-   * @param inboundReceiptLine the line item from the inbound receipt to process for inventory update
+   *
+   * @param inboundReceiptLine the line item from the inbound receipt to process
+   *                          for inventory update
    * @throws RuntimeException if the default receipt location, item, or lot is not found
    */
   @Transactional

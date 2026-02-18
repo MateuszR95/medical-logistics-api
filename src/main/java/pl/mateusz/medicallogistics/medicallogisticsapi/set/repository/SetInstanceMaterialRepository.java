@@ -1,5 +1,6 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.set.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstanceMaterial;
@@ -22,4 +23,12 @@ public interface SetInstanceMaterialRepository extends JpaRepository<SetInstance
   Optional<SetInstanceMaterial> findBySetInstanceIdAndItemIdAndLotId(
       Long setInstanceId, Long itemId, Long lotId
   );
+
+  /**
+   * Finds all SetInstanceMaterial entities associated with a SetInstance identified by its tag ID.
+   *
+   * @param setTagId the tag ID of the associated SetInstance
+   * @return a List of SetInstanceMaterial entities associated with the specified SetInstance
+   */
+  List<SetInstanceMaterial> findBySetInstanceTagId(String setTagId);
 }

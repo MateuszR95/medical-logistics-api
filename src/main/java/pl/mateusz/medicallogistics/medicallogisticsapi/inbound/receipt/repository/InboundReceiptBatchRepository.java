@@ -18,7 +18,7 @@ public interface InboundReceiptBatchRepository extends JpaRepository<InboundRece
    * @param batchNumber the batch number to search for
    * @return an Optional containing the found InboundReceiptBatch, or empty if not found
    */
-  Optional<InboundReceiptBatch> findByBatchNumber(Long batchNumber);
+  Optional<InboundReceiptBatch> findByBatchNumber(String batchNumber);
 
   /**
    * Finds an InboundReceiptBatch by its file name.
@@ -27,4 +27,14 @@ public interface InboundReceiptBatchRepository extends JpaRepository<InboundRece
    * @return an Optional containing the found InboundReceiptBatch, or empty if not found
    */
   Optional<InboundReceiptBatch> findByFileName(String fileName);
+
+  /**
+   * Finds a distinct InboundReceiptBatch that contains a line with the specified line ID.
+   *
+   * @param lineId the ID of the line to search for
+   * @return an Optional containing the found InboundReceiptBatch, or empty if not found
+   */
+  Optional<InboundReceiptBatch> findDistinctByLinesId(Long lineId);
+
+
 }

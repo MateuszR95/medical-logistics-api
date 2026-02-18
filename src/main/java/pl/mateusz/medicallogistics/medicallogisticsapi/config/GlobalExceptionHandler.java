@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.ConflictException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.ResourceNotFoundException;
+import pl.mateusz.medicallogistics.medicallogisticsapi.exception.UnauthorizedException;
 
 /**
  * Global exception handler for REST controllers.
@@ -83,6 +85,16 @@ public class GlobalExceptionHandler {
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .body(ApiError.of(500, "File processing error"));
+  }
+
+  /**
+   * Handles authentication errors.
+   */
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex) {
+    return ResponseEntity
+      .status(HttpStatus.UNAUTHORIZED)
+      .body(ApiError.of(401, ex.getMessage()));
   }
 
   /**

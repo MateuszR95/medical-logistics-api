@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="040_rename_set_return_table" author="mrojek">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="set_return"/>
+        </preConditions>
+
+        <renameTable oldTableName="set_return" newTableName="set_receipt"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -31,22 +31,22 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 @Setter
 @NoArgsConstructor
 @Table(
-    name = "set_return",
+    name = "set_receipt",
     uniqueConstraints = {
-      @UniqueConstraint(name = "uq_set_return_number", columnNames = {"return_number"})
+      @UniqueConstraint(name = "uq_set_receipt_number", columnNames = {"receipt_number"})
     },
     indexes = {
       @Index(name = "ix_sr_set_instance", columnList = "set_instance_id"),
       @Index(name = "ix_sr_received_at", columnList = "received_at")}
 )
-public class SetReturn {
+public class SetReceipt {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "return_number", nullable = false, length = 30)
-  private String returnNumber;
+  @Column(name = "receipt_number", nullable = false, length = 30)
+  private String receiptNumber;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(
@@ -70,6 +70,6 @@ public class SetReturn {
   @Column(name = "comment", length = 1000)
   private String comment;
 
-  @OneToOne(mappedBy = "setReturn", fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "setReceipt", fetch = FetchType.LAZY)
   private SetInspection inspection;
 }
