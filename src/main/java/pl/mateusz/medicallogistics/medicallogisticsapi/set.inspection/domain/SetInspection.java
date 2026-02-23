@@ -26,7 +26,7 @@ import lombok.Setter;
 import pl.mateusz.medicallogistics.medicallogisticsapi.customer.domain.Customer;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.SetInspectionStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.domain.SetInspectionDiscrepancyLine;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.domain.SetReceipt;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.receipt.domain.SetReceipt;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 
 
@@ -40,7 +40,8 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 @Table(
     name = "set_inspection",
     uniqueConstraints = {
-      @UniqueConstraint(name = "uq_si_return", columnNames = {"set_receipt_id"})},
+      @UniqueConstraint(name = "uq_si_return", columnNames = {"set_receipt_id"}),
+      @UniqueConstraint(name = "uq_si_inspection_number", columnNames = {"set_inspection_number"})},
     indexes = {
       @Index(name = "ix_si_inspected_at", columnList = "inspected_at"),
       @Index(name = "ix_si_inspected_by", columnList = "inspected_by_id"),
@@ -54,6 +55,10 @@ public class SetInspection {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+
+  @Column(name = "set_inspection_number", nullable = false, length = 80)
+  private String setInspectionNumber;
 
   @OneToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(
@@ -100,5 +105,15 @@ public class SetInspection {
 
   @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<SetInspectionDiscrepancyLine> discrepancyLines = new ArrayList<>();
+
+  /**
+   * Adds a discrepancy line to the inspection and sets the inspection reference in the line.
+   *
+   * @param line the SetInspectionDiscrepancyLine to be added to the inspection
+   */
+  public void addDiscrepancyLine(SetInspectionDiscrepancyLine line) {
+    this.discrepancyLines.add(line);
+    line.setInspection(this);
+  }
 
 }

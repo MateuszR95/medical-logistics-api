@@ -8,6 +8,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.item.domain.Item;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.repository.ItemRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.lot.domain.Lot;
 import pl.mateusz.medicallogistics.medicallogisticsapi.lot.repository.LotRepository;
+import pl.mateusz.medicallogistics.medicallogisticsapi.stock.movement.domain.StockMovement;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.domain.Inventory;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.domain.Location;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.repository.InventoryRepository;
@@ -93,4 +94,31 @@ public class InventoryService {
           inventoryRepository.save(newInventory);
         });
   }
+
+  /**
+   * Adds overage parts identified during a set inspection to the inventory.
+   * If an inventory record already exists for the specified location, item, and lot,
+   * the quantity is updated. Otherwise, a new inventory record is created.
+   *
+   * @param stockMovement the stock movement containing details about the location,
+   *                      item, lot, and quantity of overage parts to be added
+   */
+  @Transactional
+  public void addOveragePartsAfterSetInspectionToInventory(StockMovement stockMovement) {
+    inventoryRepository.findByLocationAndItemRefNumberAndLotLotNumber(
+        stockMovement.getToLocation(), stockMovement.getItem().getRefNumber(),
+        stockMovement.getLot().getLotNumber())
+        .ifPresentOrElse(inventory -> {
+          inventory.setQty(inventory.getQty() + stockMovement.getQty());
+          inventoryRepository.save(inventory);
+        }, () -> {
+          Inventory newInventory = new Inventory();
+          newInventory.setLocation(stockMovement.getToLocation());
+          newInventory.setItem(stockMovement.getItem());
+          newInventory.setLot(stockMovement.getLot());
+          newInventory.setQty(stockMovement.getQty());
+          inventoryRepository.save(newInventory);
+        });
+  }
+
 }
