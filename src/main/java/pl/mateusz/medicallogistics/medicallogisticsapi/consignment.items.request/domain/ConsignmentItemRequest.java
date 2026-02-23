@@ -1,5 +1,6 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request.domain;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,8 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDate;
@@ -64,12 +63,9 @@ public class ConsignmentItemRequest {
   @Column(name = "request_number", nullable = false, length = 30)
   private String requestNumber;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(
-      name = "customer_id",
-      nullable = true,
-      foreignKey = @ForeignKey(name = "fk_cir_customer")
-  )
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "customer_id", nullable = false,
+      foreignKey = @ForeignKey(name = "fk_cir_customer"))
   private Customer customer;
 
   @Enumerated(EnumType.STRING)
@@ -144,15 +140,4 @@ public class ConsignmentItemRequest {
 
   @Column(name = "source_ref", length = 80)
   private String sourceRef;
-
-  @PrePersist
-  @PreUpdate
-  private void validateCustomerByType() {
-    if (type == null) {
-      throw new IllegalStateException("ConsignmentItemRequest.type must not be null");
-    }
-    if (type != ConsignmentItemRequestType.SET_REPLENISHMENT && customer == null) {
-      throw new IllegalStateException("Customer is required when type is " + type);
-    }
-  }
 }

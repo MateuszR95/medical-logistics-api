@@ -28,10 +28,7 @@ public class SecurityConfig {
     http
         .authorizeHttpRequests(auth -> auth
         .requestMatchers("/h2-console/**").permitAll()
-        .requestMatchers("/api/set-inspections/perform-inspection",
-          "/api/set-inspections/discrepancies/**",
-          "/api/set-receipts/initiate-set-receipt",
-          "/api/stock-movements/process-overage-parts").hasAnyRole("ADMIN",
+        .requestMatchers("/api/set-inspections/perform-inspection").hasAnyRole("ADMIN",
             "WAREHOUSE_CUSTOMER_SERVICE", "WAREHOUSE_OPERATOR")
         .requestMatchers("/api/inbound-files/**").hasAnyRole("ADMIN")
         .requestMatchers("/api/set-instances/**",

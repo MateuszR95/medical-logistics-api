@@ -3,7 +3,6 @@ package pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.repository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.LocationZone;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.domain.Inventory;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.domain.Location;
 
@@ -34,16 +33,5 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
    */
   Optional<Inventory> findByLocationAndItemRefNumberAndLotLotNumber(
       Location location, String itemRefNumber, String lotNumber);
-
-  /**
-   * Finds a list of Inventory entities by their associated item reference number
-   * and location zone.
-   *
-   * @param refNumber the reference number of the item to search for
-   * @param locationZone the zone of the location to search within
-   * @return a List of Inventory entities matching the given item reference number
-   *         and location zone
-   */
-  List<Inventory> findByItemRefNumberAndLocationZone(String refNumber, LocationZone locationZone);
 
 }

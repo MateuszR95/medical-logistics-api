@@ -1,4 +1,4 @@
-package pl.mateusz.medicallogistics.medicallogisticsapi.set.receipt.domain;
+package pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

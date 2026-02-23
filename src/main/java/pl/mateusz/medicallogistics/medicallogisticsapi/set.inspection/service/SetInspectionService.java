@@ -1,39 +1,29 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request.service.ConsignmentItemRequestService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.ResourceNotFoundException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.UnauthorizedException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetBaseMaterial;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstanceMaterial;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.SetInspectionStatus;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.SetInspectionDiscrepancyType;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.domain.SetInspectionDiscrepancyLine;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.dto.SetInspectionDiscrepancyLineDto;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.dto.SetInspectionDiscrepancyLineDtoMapper;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.dto.SetInspectionDiscrepancyListDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.service.SetInspectionDiscrepancyLineService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.domain.SetInspection;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.dto.SetInspectionDto;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.dto.SetInspectionDtoMapper;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.dto.SetMissingItemDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.repository.SetInspectionRepository;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.receipt.domain.SetReceipt;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.receipt.repository.SetReceiptRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetBaseMaterialRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetInstanceMaterialRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetInstanceRepository;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceMaterialService;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.domain.SetReceipt;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.repository.SetReceiptRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.repository.UserRepository;
 
@@ -54,13 +44,9 @@ public class SetInspectionService {
   private final SetReceiptRepository setReceiptRepository;
 
   private final SetInspectionDiscrepancyLineService setInspectionDiscrepancyLineService;
-  private final SetInstanceMaterialService setInstanceMaterialService;
-
-  private final ConsignmentItemRequestService consignmentItemRequestService;
-
 
   /**
-   * Constructs a new instance of the SetInspectionService.
+   * Constructs a new SetInspectionService with the specified dependencies.
    *
    * @param setInspectionRepository the repository for managing SetInspection entities
    * @param setInstanceMaterialRepository the repository for managing SetInstanceMaterial entities
@@ -69,20 +55,15 @@ public class SetInspectionService {
    * @param userRepository the repository for managing User entities
    * @param setReceiptRepository the repository for managing SetReceipt entities
    * @param setInspectionDiscrepancyLineService the service for managing
-   *                                           SetInspectionDiscrepancyLine entities
-   * @param setInstanceMaterialService the service for managing SetInstanceMaterial entities
-   * @param consignmentItemRequestService the service for managing consignment item requests
+   *                                            SetInspectionDiscrepancyLine entities
    */
   public SetInspectionService(SetInspectionRepository setInspectionRepository,
-                              SetInstanceMaterialRepository setInstanceMaterialRepository,
-                              SetBaseMaterialRepository setBaseMaterialRepository,
-                              SetInstanceRepository setInstanceRepository,
-                              UserRepository userRepository,
-                              SetReceiptRepository setReceiptRepository,
-                              SetInspectionDiscrepancyLineService
-                                setInspectionDiscrepancyLineService,
-                              SetInstanceMaterialService setInstanceMaterialService,
-                              ConsignmentItemRequestService consignmentItemRequestService) {
+                SetInstanceMaterialRepository setInstanceMaterialRepository,
+                SetBaseMaterialRepository setBaseMaterialRepository,
+                SetInstanceRepository setInstanceRepository,
+                UserRepository userRepository,
+                SetReceiptRepository setReceiptRepository,
+                SetInspectionDiscrepancyLineService setInspectionDiscrepancyLineService) {
     this.setInspectionRepository = setInspectionRepository;
     this.setInstanceMaterialRepository = setInstanceMaterialRepository;
     this.setBaseMaterialRepository = setBaseMaterialRepository;
@@ -90,8 +71,6 @@ public class SetInspectionService {
     this.userRepository = userRepository;
     this.setReceiptRepository = setReceiptRepository;
     this.setInspectionDiscrepancyLineService = setInspectionDiscrepancyLineService;
-    this.setInstanceMaterialService = setInstanceMaterialService;
-    this.consignmentItemRequestService = consignmentItemRequestService;
   }
 
   /**
@@ -113,27 +92,28 @@ public class SetInspectionService {
    *      be found or is inactive
    */
   @Transactional
-  public SetInspectionDto performSetInspection(String setTagId,
-                                               SetInspectionDiscrepancyListDto discrepancyListDto,
-                                               String comment, String userEmail) {
+  public void performSetInspectionFromInboundReceipt(String setTagId,
+                                    SetInspectionDiscrepancyListDto discrepancyListDto,
+                                    String comment, String userEmail) {
     SetInstance setInstance = setInstanceRepository.findByTagId(setTagId)
         .orElseThrow(() -> new ResourceNotFoundException("Set with tag ID " + setTagId
           + " not found."));
+
     User user = userRepository.findByEmailAndActiveTrue(userEmail)
         .orElseThrow(() -> new UnauthorizedException("User with email " + userEmail
           + " not found or inactive."));
+
     SetReceipt setReceipt = setReceiptRepository
         .findTopBySetInstanceIdOrderByReceivedAtDesc(setInstance.getId())
         .orElseThrow(() -> new ResourceNotFoundException("No receipt found for set " + setTagId
           + ". Receive the set first."));
+
     SetInspection inspection = new SetInspection();
     inspection.setSetReceipt(setReceipt);
     inspection.setInspectedAt(LocalDateTime.now());
     inspection.setInspectedBy(user);
     inspection.setReceivedFromCustomer(null);
     inspection.setComment(comment);
-    String setInspectionNumber = generateSetInspectionNumber();
-    inspection.setSetInspectionNumber(setInspectionNumber);
 
     boolean noDiscrepancies = discrepancyListDto.getLines() == null
         || discrepancyListDto.getLines().isEmpty();
@@ -143,29 +123,17 @@ public class SetInspectionService {
       inspection.setClosedBy(user);
       inspection.setClosedAt(LocalDateTime.now());
       setInspectionRepository.save(inspection);
-      return SetInspectionDtoMapper.mapToDto(inspection);
+      return;
     }
     inspection.setStatus(SetInspectionStatus.OPEN);
     inspection = setInspectionRepository.save(inspection);
-    Map<String, Long> missingPartsByRefNumber = new HashMap<>();
-    for (SetInspectionDiscrepancyLineDto line : discrepancyListDto.getLines()) {
-      SetInspectionDiscrepancyLine discrepancyLine =
-          setInspectionDiscrepancyLineService.createAndSaveSetInspectionDiscrepancyLine(
-          comment, line, inspection);
-      inspection.addDiscrepancyLine(discrepancyLine);
-      setInstanceMaterialService.updateSetInstanceMaterialByMissingDiscrepancyLine(setTagId,
-          discrepancyLine);
-      if (SetInspectionDiscrepancyType.MISSING.name().equals(line.getDiscrepancyType())) {
-        missingPartsByRefNumber.merge(line.getItemRefNumber(), line.getQuantity(), Long::sum);
-      }
-    }
-    if (!missingPartsByRefNumber.isEmpty()) {
-      consignmentItemRequestService.initiateReplenishmentToSetInstance(
-            userEmail, setInstance, inspection, missingPartsByRefNumber);
-    }
-    return SetInspectionDtoMapper.mapToDto(inspection);
-  }
 
+    for (SetInspectionDiscrepancyLineDto line : discrepancyListDto.getLines()) {
+      setInspectionDiscrepancyLineService.createAndSaveSetInspectionDiscrepancyLine(
+          comment, line, inspection);
+    }
+
+  }
 
   /**
    * Calculates the missing parts for a set instance identified by its tag ID.
@@ -222,31 +190,6 @@ public class SetInspectionService {
       setInstance.setComplete(shouldBeComplete);
       setInstanceRepository.save(setInstance);
     }
-  }
-
-  /**
-   * Retrieves the list of discrepancies associated with a specific set inspection.
-   *
-   * @param setInspectionNumber the unique number identifying the set inspection
-   * @return a list of SetInspectionDiscrepancyLineDto representing the discrepancies
-   *      found during the inspection
-   * @throws ResourceNotFoundException if the set inspection with the specified number is not found
-   */
-  public List<SetInspectionDiscrepancyLineDto> getSetInspectionDiscrepancies(
-      String setInspectionNumber) {
-    SetInspection setInspection = setInspectionRepository.findBySetInspectionNumber(
-        setInspectionNumber)
-        .orElseThrow(() -> new ResourceNotFoundException("Set inspection with number "
-        + setInspectionNumber + " not found."));
-    List<SetInspectionDiscrepancyLine> discrepancyLines = setInspection.getDiscrepancyLines();
-    return discrepancyLines.stream()
-      .map(SetInspectionDiscrepancyLineDtoMapper::mapToDto)
-      .toList();
-  }
-
-  private String generateSetInspectionNumber() {
-    return "SET-INSPECTION-" + LocalDate.now() + "-"
-      + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
   }
 }
 

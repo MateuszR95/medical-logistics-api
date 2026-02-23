@@ -92,7 +92,7 @@ public class SetInstance {
   @Column(nullable = false)
   private boolean active = true;
 
-  @Column(name = "is_complete", nullable = false)
+  @Column(name = "is_complete")
   private boolean complete;
 
 }

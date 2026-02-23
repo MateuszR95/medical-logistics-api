@@ -55,7 +55,7 @@ public class SetInspectionDiscrepancyLineService {
    * @throws ResourceNotFoundException if the item or lot specified in the DTO cannot be found.
    */
   @Transactional
-  public SetInspectionDiscrepancyLine createAndSaveSetInspectionDiscrepancyLine(String comment,
+  public void createAndSaveSetInspectionDiscrepancyLine(String comment,
                               SetInspectionDiscrepancyLineDto discrepancyListDtoLine,
                                                         SetInspection inspection) {
     SetInspectionDiscrepancyLine discrepancyLine = new SetInspectionDiscrepancyLine();
@@ -75,6 +75,6 @@ public class SetInspectionDiscrepancyLineService {
         discrepancyListDtoLine.getDiscrepancyType()));
     discrepancyLine.setLoanerRequest(null);
     discrepancyLine.setComment(comment);
-    return setInspectionDiscrepancyLineRepository.save(discrepancyLine);
+    setInspectionDiscrepancyLineRepository.save(discrepancyLine);
   }
 }

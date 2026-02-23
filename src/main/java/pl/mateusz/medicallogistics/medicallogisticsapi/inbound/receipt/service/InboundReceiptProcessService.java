@@ -12,7 +12,6 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +32,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.set.SetType;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetBase;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.dto.SetInstanceDto;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.receipt.service.SetReceiptService;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.service.SetReceiptService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetBaseService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceMaterialService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceService;
@@ -134,7 +133,6 @@ public class InboundReceiptProcessService {
       reader.readLine();
       String fileLine = null;
       Map<String, SetInstance> setInstanceCache = new HashMap<>();
-      Set<String> receiptCreatedForTag = new HashSet<>();
       while ((fileLine = reader.readLine()) != null) {
 
         String trimmedFileLine = fileLine.replaceAll("\\s", "");
@@ -166,8 +164,7 @@ public class InboundReceiptProcessService {
           Lot lot = lotByLotNumberOptional.orElseGet(() -> lotService.createAndSaveLot(
               receiptLineDto.getLotNumber(), itemByRefNumber, expirationDate));
           InboundReceiptLine savedInboundReceiptLine = createAndSaveInboundReceiptLine(
-              receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, setInstanceCache,
-              receiptCreatedForTag);
+              receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, setInstanceCache);
           if (SET_LINE_TYPE.equals(savedInboundReceiptLine.getLineType().name())) {
             setInstanceMaterialService.createAndSaveSetInstanceMaterialFromInboundReceiptLine(
                 savedInboundReceiptLine);
@@ -178,10 +175,9 @@ public class InboundReceiptProcessService {
     }
   }
 
-  private InboundReceiptLine createAndSaveInboundReceiptLine(InboundReceiptLineDto receiptLineDto,
-      InboundReceiptBatch inboundReceiptBatch, Item itemByRefNumber, Lot lot,
-      Map<String, SetInstance> setInstanceCache, Set<String> receiptCreatedForTag) {
-
+  private InboundReceiptLine createAndSaveInboundReceiptLine(
+      InboundReceiptLineDto receiptLineDto, InboundReceiptBatch inboundReceiptBatch,
+      Item itemByRefNumber, Lot lot,  Map<String, SetInstance> setInstanceCache) {
     InboundReceiptLine savedInboundReceiptLine;
     if (SET_LINE_TYPE.equalsIgnoreCase(receiptLineDto.getLineType())) {
       String tag = receiptLineDto.getSetTagId().trim();
@@ -191,21 +187,18 @@ public class InboundReceiptProcessService {
             receiptLineDto);
         SetBase setBase = setBaseService.findByCatalogNumber(receiptLineDto.getSetCatalogNumber())
             .orElseThrow(() -> new IllegalArgumentException(
-              "Set base not found for catalog number: "
-            + receiptLineDto.getSetCatalogNumber()));
+            "Set base not found for catalog number: " + receiptLineDto.getSetCatalogNumber()));
         savedSetInstance = setInstanceService.createAndSaveSetInstanceFromInboundReceipt(
-          setInstanceDto, setBase);
+            setInstanceDto, setBase);
         setInstanceCache.put(tag, savedSetInstance);
       }
       savedInboundReceiptLine = inboundReceiptLineService.save(
         receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, savedSetInstance);
-      if (receiptCreatedForTag.add(tag)) {
-        setReceiptService.createAndSaveSetReceiptFromInboundReceipt(savedSetInstance,
-            inboundReceiptBatch);
-      }
+      setReceiptService.createAndSaveSetReceiptFromInboundReceipt(savedSetInstance,
+          inboundReceiptBatch);
     } else {
       savedInboundReceiptLine = inboundReceiptLineService.save(
-        receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, null);
+          receiptLineDto, inboundReceiptBatch, itemByRefNumber, lot, null);
     }
     return savedInboundReceiptLine;
   }

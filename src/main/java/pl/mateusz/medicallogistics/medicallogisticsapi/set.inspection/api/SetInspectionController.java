@@ -4,16 +4,13 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.ResourceNotFoundException;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.dto.SetInspectionDiscrepancyLineDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepancy.line.dto.SetInspectionDiscrepancyListDto;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.dto.SetInspectionDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.dto.SetMissingItemDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.service.SetInspectionService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetInstanceRepository;
@@ -67,32 +64,13 @@ public class SetInspectionController {
    * @return a ResponseEntity indicating the result of the operation
    */
   @PostMapping("/perform-inspection")
-  public ResponseEntity<SetInspectionDto> performSetInspection(
-      @RequestParam String setTagId,
-      @RequestParam(required = false) String comment,
-      @RequestBody SetInspectionDiscrepancyListDto lines,
-      Authentication authentication) {
-    SetInspectionDto setInspectionDto = setInspectionService.performSetInspection(
-        setTagId, lines, comment, authentication.getName());
-    return ResponseEntity.ok(setInspectionDto);
-  }
-
-  /**
-   * Endpoint to retrieve the discrepancies associated with a specific set inspection, identified
-   * by its inspection number.
-   *
-   * @param setInspectionNumber the unique number of the set inspection for which
-   *                           to retrieve discrepancies
-   * @return a ResponseEntity containing a SetInspectionDiscrepancyListDto
-   *      with the list of discrepancies
-   * @throws ResourceNotFoundException if the set inspection with the specified number is not found
-   */
-  @GetMapping("/discrepancies/{setInspectionNumber}")
-  public ResponseEntity<SetInspectionDiscrepancyListDto> getSetInspectionDiscrepancies(
-      @PathVariable String setInspectionNumber) {
-    List<SetInspectionDiscrepancyLineDto> setInspectionDiscrepancies = setInspectionService
-        .getSetInspectionDiscrepancies(setInspectionNumber);
-    return ResponseEntity.ok(new SetInspectionDiscrepancyListDto(setInspectionDiscrepancies));
+  public ResponseEntity<?> performSetInspectionFromInboundReceipt(@RequestParam String setTagId,
+                               @RequestParam(required = false) String comment,
+                               @RequestBody SetInspectionDiscrepancyListDto lines,
+                               Authentication authentication) {
+    setInspectionService.performSetInspectionFromInboundReceipt(setTagId, lines,
+        comment, authentication.getName());
+    return ResponseEntity.ok().build();
   }
 
 
