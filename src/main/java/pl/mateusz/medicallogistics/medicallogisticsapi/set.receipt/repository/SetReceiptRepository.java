@@ -1,10 +1,10 @@
-package pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.repository;
+package pl.mateusz.medicallogistics.medicallogisticsapi.set.receipt.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.returns.domain.SetReceipt;
-
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.receipt.domain.SetReceipt;
 
 /**
  * Repository interface for managing SetReceipt entities.

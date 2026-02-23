@@ -8,6 +8,12 @@ VALUES
     70, 0
 ),
 ((SELECT l.id FROM location l JOIN warehouse w ON w.id=l.warehouse_id
+  WHERE w.code='EDC-NL' AND l.code='STO-A2'),
+ (SELECT i.id FROM item i WHERE i.ref_number='111.002'),
+ (SELECT lo.id FROM lot lo WHERE lo.lot_number='AAA024AA'),
+ 10, 0
+),
+((SELECT l.id FROM location l JOIN warehouse w ON w.id=l.warehouse_id
      WHERE w.code='EDC-NL' AND l.code='STO-B1'),
     (SELECT i.id FROM item i WHERE i.ref_number='111.004'),
     (SELECT lo.id FROM lot lo WHERE lo.lot_number='AAA131AA'),

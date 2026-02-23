@@ -132,7 +132,4 @@ public class SetInstanceService {
       .stream().map(SetInstanceDtoMapper::mapToDto).collect(Collectors.toList());
   }
 
-  public void moveSetInstanceToLocation(String setTagId, String locationCode) {
-
-  }
 }
