@@ -10,9 +10,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request.domain.ConsignmentItemRequest;
 import pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request.service.ConsignmentItemRequestService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.ResourceNotFoundException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.UnauthorizedException;
+import pl.mateusz.medicallogistics.medicallogisticsapi.set.SetStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetBaseMaterial;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstanceMaterial;
@@ -36,6 +38,7 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetInstanc
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.service.SetInstanceMaterialService;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.repository.UserRepository;
+import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.service.InventoryService;
 
 /**
  * Service class for managing set inspections.
@@ -57,10 +60,11 @@ public class SetInspectionService {
   private final SetInstanceMaterialService setInstanceMaterialService;
 
   private final ConsignmentItemRequestService consignmentItemRequestService;
+  private final InventoryService inventoryService;
 
 
   /**
-   * Constructs a new instance of the SetInspectionService.
+   * Constructs a new SetInspectionService with the specified dependencies.
    *
    * @param setInspectionRepository the repository for managing SetInspection entities
    * @param setInstanceMaterialRepository the repository for managing SetInstanceMaterial entities
@@ -71,7 +75,8 @@ public class SetInspectionService {
    * @param setInspectionDiscrepancyLineService the service for managing
    *                                           SetInspectionDiscrepancyLine entities
    * @param setInstanceMaterialService the service for managing SetInstanceMaterial entities
-   * @param consignmentItemRequestService the service for managing consignment item requests
+   * @param consignmentItemRequestService the service for managing ConsignmentItemRequest entities
+   * @param inventoryService the service for managing inventory and stock movements
    */
   public SetInspectionService(SetInspectionRepository setInspectionRepository,
                               SetInstanceMaterialRepository setInstanceMaterialRepository,
@@ -82,7 +87,8 @@ public class SetInspectionService {
                               SetInspectionDiscrepancyLineService
                                 setInspectionDiscrepancyLineService,
                               SetInstanceMaterialService setInstanceMaterialService,
-                              ConsignmentItemRequestService consignmentItemRequestService) {
+                              ConsignmentItemRequestService consignmentItemRequestService,
+                              InventoryService inventoryService) {
     this.setInspectionRepository = setInspectionRepository;
     this.setInstanceMaterialRepository = setInstanceMaterialRepository;
     this.setBaseMaterialRepository = setBaseMaterialRepository;
@@ -92,6 +98,7 @@ public class SetInspectionService {
     this.setInspectionDiscrepancyLineService = setInspectionDiscrepancyLineService;
     this.setInstanceMaterialService = setInstanceMaterialService;
     this.consignmentItemRequestService = consignmentItemRequestService;
+    this.inventoryService = inventoryService;
   }
 
   /**
@@ -118,14 +125,14 @@ public class SetInspectionService {
                                                String comment, String userEmail) {
     SetInstance setInstance = setInstanceRepository.findByTagId(setTagId)
         .orElseThrow(() -> new ResourceNotFoundException("Set with tag ID " + setTagId
-          + " not found."));
+        + " not found."));
     User user = userRepository.findByEmailAndActiveTrue(userEmail)
         .orElseThrow(() -> new UnauthorizedException("User with email " + userEmail
-          + " not found or inactive."));
+        + " not found or inactive."));
     SetReceipt setReceipt = setReceiptRepository
         .findTopBySetInstanceIdOrderByReceivedAtDesc(setInstance.getId())
         .orElseThrow(() -> new ResourceNotFoundException("No receipt found for set " + setTagId
-          + ". Receive the set first."));
+        + ". Receive the set first."));
     SetInspection inspection = new SetInspection();
     inspection.setSetReceipt(setReceipt);
     inspection.setInspectedAt(LocalDateTime.now());
@@ -142,27 +149,76 @@ public class SetInspectionService {
       inspection.setStatus(SetInspectionStatus.CLOSED);
       inspection.setClosedBy(user);
       inspection.setClosedAt(LocalDateTime.now());
-      setInspectionRepository.save(inspection);
+      inspection = setInspectionRepository.save(inspection);
+
+      if (setInstance.getSetStatus() == SetStatus.INBOUND) {
+        Map<String, Long> missingPartsByRefNumber = new HashMap<>();
+        List<SetMissingItemDto> missingItemsAgainstBase = calculateMissingPartsToFullSet(setTagId,
+            userEmail);
+        for (SetMissingItemDto missingItem : missingItemsAgainstBase) {
+          missingPartsByRefNumber.put(
+              missingItem.getItemRefNumber(),
+              missingItem.getMissingQty()
+          );
+        }
+        if (!missingPartsByRefNumber.isEmpty()) {
+          ConsignmentItemRequest consignmentItemRequest = consignmentItemRequestService
+              .initiateReplenishmentToSetInstance(
+              userEmail, setInstance, inspection, missingPartsByRefNumber);
+          inventoryService.updateInventoryAndCreateStockMovementAfterSetInspection(
+              consignmentItemRequest);
+        }
+      }
       return SetInspectionDtoMapper.mapToDto(inspection);
     }
     inspection.setStatus(SetInspectionStatus.OPEN);
     inspection = setInspectionRepository.save(inspection);
     Map<String, Long> missingPartsByRefNumber = new HashMap<>();
+    Map<String, Long> manualReplenishmentPartsByRefNumber = new HashMap<>();
     for (SetInspectionDiscrepancyLineDto line : discrepancyListDto.getLines()) {
       SetInspectionDiscrepancyLine discrepancyLine =
           setInspectionDiscrepancyLineService.createAndSaveSetInspectionDiscrepancyLine(
           comment, line, inspection);
       inspection.addDiscrepancyLine(discrepancyLine);
-      setInstanceMaterialService.updateSetInstanceMaterialByMissingDiscrepancyLine(setTagId,
-          discrepancyLine);
-      if (SetInspectionDiscrepancyType.MISSING.name().equals(line.getDiscrepancyType())) {
-        missingPartsByRefNumber.merge(line.getItemRefNumber(), line.getQuantity(), Long::sum);
+      setInstanceMaterialService.updateSetInstanceMaterialByMissingOrDamagedDiscrepancyLine(
+          setTagId, discrepancyLine);
+
+      if (shouldReplenish(line)) {
+        manualReplenishmentPartsByRefNumber.merge(
+            line.getItemRefNumber(),
+            line.getQuantity(),
+            Long::sum);
+        missingPartsByRefNumber.merge(
+            line.getItemRefNumber(),
+            line.getQuantity(),
+            Long::sum
+        );
+      }
+    }
+    if (setInstance.getSetStatus() == SetStatus.INBOUND) {
+      List<SetMissingItemDto> missingItemsAgainstBase = calculateMissingPartsToFullSet(setTagId,
+          userEmail);
+      for (SetMissingItemDto missingItem : missingItemsAgainstBase) {
+        long alreadyCountedForReplenishment = manualReplenishmentPartsByRefNumber.getOrDefault(
+            missingItem.getItemRefNumber(), 0L);
+        long additionalMissingQty = missingItem.getMissingQty() - alreadyCountedForReplenishment;
+
+        if (additionalMissingQty > 0) {
+          missingPartsByRefNumber.merge(
+              missingItem.getItemRefNumber(),
+              additionalMissingQty,
+              Long::sum);
+        }
       }
     }
     if (!missingPartsByRefNumber.isEmpty()) {
-      consignmentItemRequestService.initiateReplenishmentToSetInstance(
-            userEmail, setInstance, inspection, missingPartsByRefNumber);
+      ConsignmentItemRequest consignmentItemRequest = consignmentItemRequestService
+          .initiateReplenishmentToSetInstance(
+          userEmail, setInstance, inspection, missingPartsByRefNumber);
+      inventoryService.updateInventoryAndCreateStockMovementAfterSetInspection(
+          consignmentItemRequest);
     }
+
     return SetInspectionDtoMapper.mapToDto(inspection);
   }
 
@@ -178,7 +234,7 @@ public class SetInspectionService {
    * @throws ResourceNotFoundException if the set instance with the specified tag ID is not found
    */
   @Transactional
-  public List<SetMissingItemDto> calculateMissingParts(String setTagId) {
+  public List<SetMissingItemDto> calculateMissingPartsToFullSet(String setTagId, String userEmail) {
     SetInstance setInstance = setInstanceRepository.findByTagId(setTagId).orElseThrow(
         () -> new ResourceNotFoundException("Set with tag ID " + setTagId + " not found."));
     List<SetInstanceMaterial> setInstanceMaterialList = setInstanceMaterialRepository
@@ -247,6 +303,11 @@ public class SetInspectionService {
   private String generateSetInspectionNumber() {
     return "SET-INSPECTION-" + LocalDate.now() + "-"
       + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+  }
+
+  private boolean shouldReplenish(SetInspectionDiscrepancyLineDto dto) {
+    return (dto.getDiscrepancyType().equals(SetInspectionDiscrepancyType.MISSING.name()))
+      || dto.getDiscrepancyType().equals(SetInspectionDiscrepancyType.DAMAGED.name());
   }
 }
 

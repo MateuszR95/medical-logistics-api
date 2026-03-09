@@ -6,5 +6,6 @@ package pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepan
 public enum SetInspectionDiscrepancyType {
 
   MISSING,
-  OVERAGE
+  OVERAGE,
+  DAMAGED
 }

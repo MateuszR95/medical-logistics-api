@@ -20,6 +20,7 @@ import lombok.Setter;
 import pl.mateusz.medicallogistics.medicallogisticsapi.item.domain.Item;
 import pl.mateusz.medicallogistics.medicallogisticsapi.lot.domain.Lot;
 import pl.mateusz.medicallogistics.medicallogisticsapi.stock.movement.StockMovementRefType;
+import pl.mateusz.medicallogistics.medicallogisticsapi.stock.movement.StockMovementStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.stock.movement.StockMovementType;
 import pl.mateusz.medicallogistics.medicallogisticsapi.user.domain.User;
 import pl.mateusz.medicallogistics.medicallogisticsapi.warehouse.domain.Location;
@@ -94,4 +95,16 @@ public class StockMovement {
 
   @Column(name = "comment", length = 800)
   private String comment;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false, length = 20)
+  private StockMovementStatus status = StockMovementStatus.ALLOCATED;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "updated_by_id",
+      foreignKey = @ForeignKey(name = "fk_sm_updated_by"))
+  private User updatedBy;
+
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 }

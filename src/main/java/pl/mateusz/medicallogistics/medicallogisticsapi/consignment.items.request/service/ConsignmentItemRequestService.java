@@ -80,7 +80,7 @@ public class ConsignmentItemRequestService {
    * @throws ResourceNotFoundException if an item with the specified reference number is not found
    */
   @Transactional
-  public void initiateReplenishmentToSetInstance(
+  public ConsignmentItemRequest initiateReplenishmentToSetInstance(
       String userEmail,
       SetInstance setInstance,
       SetInspection setInspection,
@@ -98,7 +98,7 @@ public class ConsignmentItemRequestService {
     request.setSetInstance(setInstance);
     request.setPlannedShippingDate(LocalDate.now());
     request.setCustomer(null);
-    request.setSourceRef("SET_INSPECTION:" + setInspection.getSetInspectionNumber());
+    request.setSourceRef(setInspection.getSetInspectionNumber());
 
     ConsignmentItemRequest saved = consignmentItemRequestRepository.save(request);
 
@@ -118,18 +118,26 @@ public class ConsignmentItemRequestService {
 
       long inStock = storage.stream().mapToLong(Inventory::getQty).sum();
       long allocated = Math.min(requested, inStock);
-      long backordered = requested - allocated;
-      ConsignmentItemRequestLine line = new ConsignmentItemRequestLine();
-      line.setRequest(saved);
-      line.setItem(item);
-      line.setRequestedQty(requested);
-      line.setAllocatedQty(allocated);
-      line.setBackorderedQty(backordered);
-      line.setShippedQty(0);
-      requestLines.add(consignmentItemRequestLineRepository.save(line));
+      long backorderedParts = requested - allocated;
+      createAndSaveConsignmentItemRequestLine(saved, item, requested, allocated,
+          backorderedParts, requestLines);
     }
     saved.setLines(requestLines);
-    consignmentItemRequestRepository.save(saved);
+    return consignmentItemRequestRepository.save(saved);
+  }
+
+  private void createAndSaveConsignmentItemRequestLine(ConsignmentItemRequest saved, Item item,
+                               long requested, long allocated,
+                               long backorderedParts,
+                               List<ConsignmentItemRequestLine> requestLines) {
+    ConsignmentItemRequestLine line = new ConsignmentItemRequestLine();
+    line.setRequest(saved);
+    line.setItem(item);
+    line.setRequestedQty(requested);
+    line.setAllocatedQty(allocated);
+    line.setBackorderedQty(backorderedParts);
+    line.setShippedQty(0);
+    requestLines.add(consignmentItemRequestLineRepository.save(line));
   }
 
   private String generateConsignmentItemRequestNumber() {

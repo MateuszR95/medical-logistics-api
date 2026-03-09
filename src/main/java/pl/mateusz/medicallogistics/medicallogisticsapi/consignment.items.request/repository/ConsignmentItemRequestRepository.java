@@ -1,7 +1,9 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request.domain.ConsignmentItemRequest;
+
 
 /**
  * Repository interface for managing ConsignmentItemRequest entities.
@@ -10,4 +12,12 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.consignment.items.request
  */
 public interface ConsignmentItemRequestRepository extends JpaRepository<
     ConsignmentItemRequest, Long> {
+
+  /**
+   * Finds a ConsignmentItemRequest by its source reference.
+   *
+   * @param sourceRef the source reference to search for
+   * @return an Optional containing the found ConsignmentItemRequest, or empty if not found
+   */
+  Optional<ConsignmentItemRequest> findBySourceRef(String sourceRef);
 }

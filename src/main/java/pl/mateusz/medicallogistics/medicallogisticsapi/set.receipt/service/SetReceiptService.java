@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.BadRequestException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.exception.ResourceNotFoundException;
+import pl.mateusz.medicallogistics.medicallogisticsapi.exception.UnauthorizedException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptBatch;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.SetStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstance;
@@ -101,8 +102,8 @@ public class SetReceiptService {
         + " is not associated with any customer");
     }
     User user = userRepository.findByEmailAndActiveTrue(userEmail)
-        .orElseThrow(() -> new ResourceNotFoundException("Active user with email "
-          + userEmail + " not found"));
+        .orElseThrow(() -> new UnauthorizedException("User with email " + userEmail
+        + " not found or inactive."));
     SetReceipt setReceipt = new SetReceipt();
     setReceipt.setReceiptNumber(generateReceiptNumber());
     setReceipt.setSetInstance(setInstance);

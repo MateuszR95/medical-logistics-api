@@ -16,7 +16,6 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.discrepanc
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.dto.SetInspectionDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.dto.SetMissingItemDto;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.service.SetInspectionService;
-import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetInstanceRepository;
 
 /**
  * REST controller for managing set inspections.
@@ -28,18 +27,14 @@ import pl.mateusz.medicallogistics.medicallogisticsapi.set.repository.SetInstanc
 public class SetInspectionController {
 
   private final SetInspectionService setInspectionService;
-  private final SetInstanceRepository setInstanceRepository;
 
   /**
    * Constructs a new SetInspectionController with the specified dependencies.
    *
    * @param setInspectionService the service for managing set inspections
-   * @param setInstanceRepository the repository for accessing set instances
    */
-  public SetInspectionController(SetInspectionService setInspectionService,
-                                 SetInstanceRepository setInstanceRepository) {
+  public SetInspectionController(SetInspectionService setInspectionService) {
     this.setInspectionService = setInspectionService;
-    this.setInstanceRepository = setInstanceRepository;
   }
 
   /**
@@ -52,8 +47,9 @@ public class SetInspectionController {
    */
   @GetMapping("/missing-parts")
   public ResponseEntity<List<SetMissingItemDto>> getMissingPartsInSet(@RequestParam(
-      name = "setTagId") String setTagId) {
-    return ResponseEntity.ok(setInspectionService.calculateMissingParts(setTagId));
+      name = "setTagId") String setTagId, Authentication authentication) {
+    return ResponseEntity.ok(setInspectionService.calculateMissingPartsToFullSet(setTagId,
+      authentication.getName()));
   }
 
   /**

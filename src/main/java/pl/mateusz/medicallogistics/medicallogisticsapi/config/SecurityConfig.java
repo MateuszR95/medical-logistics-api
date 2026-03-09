@@ -31,7 +31,7 @@ public class SecurityConfig {
         .requestMatchers("/api/set-inspections/perform-inspection",
           "/api/set-inspections/discrepancies/**",
           "/api/set-receipts/initiate-set-receipt",
-          "/api/stock-movements/process-overage-parts").hasAnyRole("ADMIN",
+          "/api/stock-movements/**").hasAnyRole("ADMIN",
             "WAREHOUSE_CUSTOMER_SERVICE", "WAREHOUSE_OPERATOR")
         .requestMatchers("/api/inbound-files/**").hasAnyRole("ADMIN")
         .requestMatchers("/api/set-instances/**",
