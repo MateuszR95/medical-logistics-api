@@ -1,5 +1,6 @@
 package pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.inspection.domain.SetInspection;
@@ -17,4 +18,12 @@ public interface SetInspectionRepository extends JpaRepository<SetInspection, Lo
    * @return an Optional containing the found SetInspection, or empty if not found
    */
   Optional<SetInspection> findBySetInspectionNumber(String setInspectionNumber);
+
+  /**
+   * Finds a list of SetInspection entities by the ID of the associated set receipt set instance.
+   *
+   * @param setInstanceId the ID of the set receipt set instance to search for
+   * @return a List of SetInspection entities associated with the given set receipt set instance ID
+   */
+  List<SetInspection> findBySetReceiptSetInstanceId(Long setInstanceId);
 }

@@ -46,4 +46,28 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
    */
   List<Inventory> findByItemRefNumberAndLocationZone(String refNumber, LocationZone locationZone);
 
+  /**
+   * Finds a list of Inventory entities by their associated item reference number
+   * and location zone, ordered by lot expiration date in ascending order.
+   *
+   * @param refNumber the reference number of the item to search for
+   * @param locationZone the zone of the location to search within
+   * @return a List of Inventory entities matching the given item reference number
+   *         and location zone, ordered by lot expiration date in ascending order
+   */
+  List<Inventory> findByItemRefNumberAndLocationZoneOrderByLotExpirationDateAsc(
+      String refNumber, LocationZone locationZone);
+
+  /**
+   * Finds a list of Inventory entities by their associated item reference number
+   * and location zone, ordered by ID in ascending order.
+   *
+   * @param itemRefNumber the reference number of the item to search for
+   * @param locationZone the zone of the location to search within
+   * @return a List of Inventory entities matching the given item reference number
+   *         and location zone, ordered by ID in ascending order
+   */
+  List<Inventory> findByItemRefNumberAndLocationZoneOrderByIdAsc(String itemRefNumber,
+                                                                 LocationZone locationZone);
+
 }

@@ -48,6 +48,7 @@
     <include file="033_create_shipment_table.xml" relativeToChangelogFile="true"/>
     <include file="034_create_shipment_line_table.xml" relativeToChangelogFile="true"/>
     <include file="035_create_stock_movement_table.xml" relativeToChangelogFile="true"/>
+    <include file="048_add_status_updated_by_updated_at_columns_in_stock_movement_table.xml" relativeToChangelogFile="true"/>
     <include file="036_create_status_history_table.xml" relativeToChangelogFile="true"/>
     <include file="037_add_set_catalog_number_in_inbound_receipt_line_table.xml" relativeToChangelogFile="true"/>
     <include file="038_add_unique_constraint_lot_number_expiration_date_in_lot_table.xml" relativeToChangelogFile="true"/>

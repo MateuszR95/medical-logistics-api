@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pl.mateusz.medicallogistics.medicallogisticsapi.config.InboundConfiguration;
+import pl.mateusz.medicallogistics.medicallogisticsapi.exception.UnauthorizedException;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.InboundReceiptBatchStatus;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.domain.InboundReceiptBatch;
 import pl.mateusz.medicallogistics.medicallogisticsapi.inbound.receipt.dto.InboundReceiptBatchDto;
@@ -152,7 +153,8 @@ public class InboundReceiptImportService {
         .findByCode(inboundConfiguration.getDefaultReceiptWarehouseCode())
         .orElseThrow(() -> new IllegalStateException("Default receipt warehouse not found"));
     User user = userRepository.findByEmailAndActiveTrue(userEmail)
-        .orElseThrow(() -> new IllegalStateException("User not found"));
+        .orElseThrow(() -> new UnauthorizedException("User with email " + userEmail
+        + " not found or inactive."));
     batchDto.setBatchNumber("BATCH-" + LocalDateTime.now(ZoneId.of("Europe/Warsaw"))
         .format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")));
     batchDto.setFileName(storedFileName);

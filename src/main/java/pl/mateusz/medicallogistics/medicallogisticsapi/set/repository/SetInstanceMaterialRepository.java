@@ -3,6 +3,7 @@ package pl.mateusz.medicallogistics.medicallogisticsapi.set.repository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import pl.mateusz.medicallogistics.medicallogisticsapi.set.domain.SetInstanceMaterial;
 
 /**
@@ -31,6 +32,18 @@ public interface SetInstanceMaterialRepository extends JpaRepository<SetInstance
    * @return a List of SetInstanceMaterial entities associated with the specified SetInstance
    */
   List<SetInstanceMaterial> findBySetInstanceTagId(String setTagId);
+
+  /**
+   * Finds all SetInstanceMaterial entities associated with a SetInstance identified by its tag ID,
+   * including detailed information about the associated Item and Lot.
+   *
+   * @param setTagId the tag ID of the associated SetInstance
+   * @return a List of SetInstanceMaterial entities with detailed information
+   *      about the associated Item and Lot
+   */
+  @Query("select sim from SetInstanceMaterial sim join fetch sim.item "
+      + "left join fetch sim.lot where sim.setInstance.tagId = :setTagId")
+  List<SetInstanceMaterial> findDetailedBySetInstanceTagId(String setTagId);
 
 
 }

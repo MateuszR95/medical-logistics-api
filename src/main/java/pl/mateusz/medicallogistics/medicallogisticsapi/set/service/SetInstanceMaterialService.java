@@ -87,10 +87,11 @@ public class SetInstanceMaterialService {
    *      result in negative present quantity
    */
   @Transactional
-  public void updateSetInstanceMaterialByMissingDiscrepancyLine(
+  public void updateSetInstanceMaterialByMissingOrDamagedDiscrepancyLine(
       String setTagId, SetInspectionDiscrepancyLine discrepancyLine) {
     if (discrepancyLine == null
-        || discrepancyLine.getDiscrepancyType() != SetInspectionDiscrepancyType.MISSING) {
+        || (discrepancyLine.getDiscrepancyType() != SetInspectionDiscrepancyType.MISSING
+        && discrepancyLine.getDiscrepancyType() != SetInspectionDiscrepancyType.DAMAGED)) {
       return;
     }
     if (discrepancyLine.getItem() == null || discrepancyLine.getLot() == null) {
@@ -129,7 +130,6 @@ public class SetInstanceMaterialService {
         toDelete.add(material);
       } else {
         material.setPresentQty(newPresent);
-        material.setMissingQty(material.getMissingQty() + qty);
         toSave.add(material);
       }
     }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+
+    <changeSet id="048_add_status_updated_by_updated_at_columns_in_stock_movement_table" author="mrojek">
+        <addColumn tableName="stock_movement">
+            <column name="status" type="varchar(20)" defaultValue="ALLOCATED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp"/>
+            <column name="updated_by_id" type="bigint"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+                baseTableName="stock_movement"
+                baseColumnNames="updated_by_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_sm_updated_by"/>
+
+        <createIndex tableName="stock_movement" indexName="ix_sm_status">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex tableName="stock_movement" indexName="ix_sm_updated_at">
+            <column name="updated_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
